@@ -53,6 +53,21 @@ export default function NewEntryPage() {
 
   const duration = calculateDuration(startTime, endTime);
 
+  const formatIndonesianDate = (dString: string) => {
+    if (!dString) return '';
+    try {
+      const parsed = new Date(dString + 'T00:00:00');
+      return parsed.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    } catch {
+      return dString;
+    }
+  };
+
   const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -165,44 +180,116 @@ export default function NewEntryPage() {
           {/* Row 1: Tanggal & Waktu */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-blue-500" />
-                <span>Tanggal</span>
-              </label>
-              <input
-                type="date"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Tanggal Kegiatan</span>
+                </label>
+                <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">
+                  (Format: Tanggal / Bulan / Tahun)
+                </span>
+              </div>
+              
+              <div className="relative group">
+                <input
+                  type="date"
+                  required
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  onClick={(e) => {
+                    try {
+                      e.currentTarget.showPicker?.();
+                    } catch {
+                      // fallback
+                    }
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer transition-all hover:border-blue-400 dark:hover:border-blue-500"
+                  title="Klik untuk memilih tanggal langsung dari kalender"
+                />
+              </div>
+
+              {/* Tampilan Terformat & Tombol Pintas */}
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5">
+                {date && (
+                  <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5 bg-blue-50/70 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-200/60 dark:border-blue-800/40">
+                    <span className="text-blue-600 dark:text-blue-400 font-semibold">📅 Terpilih:</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{formatIndonesianDate(date)}</span>
+                  </p>
+                )}
+                <div className="flex items-center gap-1.5 text-[11px] ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => setDate(today)}
+                    className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-medium transition-colors"
+                  >
+                    Hari Ini
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() - 1);
+                      setDate(d.toISOString().split('T')[0]);
+                    }}
+                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-medium transition-colors"
+                  >
+                    Kemarin
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-blue-500" />
-                <span>Jam Mulai</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Jam Mulai</span>
+                </label>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                  (Jam:Menit)
+                </span>
+              </div>
               <input
                 type="time"
                 required
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                onClick={(e) => {
+                  try {
+                    e.currentTarget.showPicker?.();
+                  } catch {
+                    // fallback
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer transition-all hover:border-blue-400 dark:hover:border-blue-500"
+                title="Klik untuk memilih jam"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-blue-500" />
-                <span>Jam Selesai</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Jam Selesai</span>
+                </label>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                  (Jam:Menit)
+                </span>
+              </div>
               <input
                 type="time"
                 required
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                onClick={(e) => {
+                  try {
+                    e.currentTarget.showPicker?.();
+                  } catch {
+                    // fallback
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer transition-all hover:border-blue-400 dark:hover:border-blue-500"
+                title="Klik untuk memilih jam"
               />
             </div>
           </div>
