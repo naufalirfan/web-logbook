@@ -295,15 +295,7 @@ export default function Navbar() {
                   </>
                 )}
               </div>
-            ) : (
-              <button
-                onClick={signInWithGoogle}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-105 active:scale-95"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Masuk Akun</span>
-              </button>
-            )}
+            ) : null}
 
             {/* Mobile Hamburger Button */}
             {isAuthenticated && (

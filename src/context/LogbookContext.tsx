@@ -434,16 +434,12 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         }
       });
     } else {
-      // Local demo default login
-      const mockUser = {
-        id: 'user-google-1',
-        email: 'naufalfaster@gmail.com',
-        user_metadata: {
-          full_name: 'Naufal Irfansyah Saputra',
-          avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+      if (typeof window !== 'undefined') {
+        const googleObj = (window as unknown as { google?: { accounts: { id: any } } }).google;
+        if (googleObj?.accounts?.id) {
+          googleObj.accounts.id.prompt();
         }
-      } as unknown as User;
-      setUser(mockUser);
+      }
     }
   }, []);
 

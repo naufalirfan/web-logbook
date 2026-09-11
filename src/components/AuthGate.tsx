@@ -194,50 +194,16 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             )}
           </div>
 
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider relative">
-              Akses Cepat Pengujian
-            </span>
-          </div>
-
-          {/* Special Admin Card: naufalfaster@gmail.com */}
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 dark:border-amber-700/50 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
-                <Crown className="w-4 h-4" />
-                <span>Super Admin & Verifikator</span>
-              </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white">
-                Full Akses
-              </span>
+          {/* Security & Authentication Info */}
+          <div className="rounded-2xl p-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800/80 text-center space-y-1.5">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <span>Autentikasi Resmi Google OAuth</span>
             </div>
-
-            <p className="text-[11px] text-slate-600 dark:text-slate-300">
-              Akun khusus <code className="font-semibold text-amber-600 dark:text-amber-400">naufalfaster@gmail.com</code> memiliki hak akses penuh untuk me-review, menyetujui, dan mengelola seluruh logbook.
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              Login hanya dapat dilakukan menggunakan akun Google asli yang terverifikasi. Hak akses Super Admin otomatis diberikan kepada pemilik sistem (<b>naufalfaster@gmail.com</b>).
             </p>
-
-            <button
-              type="button"
-              onClick={signInAsAdmin}
-              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span>Masuk sebagai naufalfaster@gmail.com</span>
-              <ArrowRight className="w-3.5 h-3.5 ml-auto" />
-            </button>
           </div>
-
-          {/* Demo Regular Student Button */}
-          <button
-            type="button"
-            onClick={signInAsDemoUser}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors"
-          >
-            <UserCheck className="w-3.5 h-3.5" />
-            <span>Masuk sebagai Naufal Irfansyah Saputra (Mahasiswa)</span>
-          </button>
 
         </div>
 
