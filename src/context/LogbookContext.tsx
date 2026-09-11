@@ -94,13 +94,17 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
 
       if (profileData) {
         const isSuper = isUserAdmin(profileData.email);
+        const resolvedNim = (profileData.nim === '2313451001' || !profileData.nim) && isSuper ? '2412401021' : (profileData.nim || '');
+        if (isSuper && profileData.nim !== '2412401021') {
+          supabase.from('profiles').update({ nim: '2412401021' }).eq('id', userId).then(() => {});
+        }
         setProfiles(prev => ({
           ...prev,
           [profileData.program_type]: {
             id: profileData.id,
             email: profileData.email,
             fullName: profileData.full_name,
-            nim: profileData.nim || '',
+            nim: resolvedNim,
             avatarUrl: profileData.avatar_url,
             programType: profileData.program_type,
             programTitle: profileData.program_title || '',
@@ -170,7 +174,16 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
 
       const savedProfiles = localStorage.getItem(STORAGE_KEYS.PROFILES);
       if (savedProfiles) {
-        setProfiles(JSON.parse(savedProfiles));
+        try {
+          const parsed = JSON.parse(savedProfiles);
+          if (parsed.magang && (parsed.magang.nim === '2313451001' || !parsed.magang.nim)) {
+            parsed.magang.nim = '2412401021';
+            localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(parsed));
+          }
+          setProfiles(parsed);
+        } catch {
+          setProfiles(DEFAULT_PROFILES);
+        }
       }
 
       const savedEntries = localStorage.getItem(STORAGE_KEYS.ENTRIES);

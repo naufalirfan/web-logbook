@@ -5,7 +5,7 @@ export const DEFAULT_PROFILES: Record<string, UserProfile> = {
     id: 'user-demo',
     email: 'naufalfaster@gmail.com',
     fullName: 'Naufal Irfansyah Saputra',
-    nim: '2313451001',
+    nim: '2412401021',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     programType: 'magang',
     programTitle: 'Magang Klinik & Laboratorium RSGM UMY',
