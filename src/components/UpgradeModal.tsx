@@ -79,7 +79,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               <span>Promo Spesial Mahasiswa</span>
             </span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-black/25 text-amber-100">
-              Sekali Bayar • Aktif Selamanya
+              Masa Aktif 2 Tahun (Rp 4.000)
             </span>
           </div>
 
@@ -87,7 +87,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             Tingkatkan ke <span className="underline decoration-yellow-300 decoration-wavy underline-offset-4">Logbook PRO</span>
           </h2>
           <p className="text-xs sm:text-sm text-amber-100 mt-1 max-w-xl">
-            Bebaskan batas entri, cetak laporan A4 resmi tanpa watermark, dan maksimalkan nilai magang & perkuliahan Anda hanya dengan <b>Rp 4.000</b>.
+            Bebaskan batas entri, cetak laporan A4 resmi tanpa watermark, dan maksimalkan nilai magang & perkuliahan Anda hanya dengan <b>Rp 4.000 (Berlaku 2 Tahun Penuh)</b>.
           </p>
 
           {/* Navigation Tab */}
@@ -111,7 +111,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               }`}
             >
               <QrCode className="w-3.5 h-3.5 text-amber-600" />
-              <span>Bayar via QRIS (Rp 4.000)</span>
+              <span>Bayar via QRIS (Rp 4.000 / 2 Tahun)</span>
             </button>
           </div>
         </div>
@@ -189,10 +189,12 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                     <div className="mt-2 mb-3">
                       <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-black text-slate-900 dark:text-white">Rp 4.000</span>
+                        <span className="text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">/ 2 Tahun</span>
                         <span className="text-xs line-through text-slate-400">Rp 40.000</span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">Diskon 90%</span>
                       </div>
-                      <p className="text-[11px] text-amber-700 dark:text-amber-300 font-medium">Sekali bayar seharga gorengan, aktif selamanya!</p>
+                      <p className="text-[11px] text-amber-700 dark:text-amber-300 font-semibold mt-1">
+                        ⏱️ Aktif selama 2 tahun penuh (sangat hemat untuk seluruh masa kuliah)!
+                      </p>
                     </div>
 
                     <div className="text-xs font-bold text-slate-900 dark:text-white mb-2">
@@ -202,23 +204,23 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                     <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-200">
                       <li className="flex items-start gap-2">
                         <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span><b>Entri Unlimited:</b> Catat puluhan hingga ratusan kegiatan magang tanpa batas.</span>
+                        <span><b>Masa Aktif 2 Tahun:</b> Tenang tanpa perpanjangan bulanan.</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span><b>Laporan 100% Bersih:</b> Cetak A4 siap kumpul ke dosen/pembimbing tanpa watermark.</span>
+                        <span><b>Entri Unlimited:</b> Catat puluhan hingga ratusan kegiatan tanpa batas.</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span><b>Akses 5 Program:</b> Bebas pindah ke KKN, PKL, Skripsi, atau Proyek Mandiri.</span>
+                        <span><b>Laporan 100% Bersih:</b> Cetak A4 siap kumpul tanpa watermark.</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span><b>Ekspor Excel (*.xls):</b> Backup rekapitulasi data lengkap sekali klik.</span>
+                        <span><b>Akses 5 Program:</b> Bebas pindah ke KKN, PKL, Skripsi, atau Mandiri.</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span>Upload bukti foto kegiatan resolusi penuh.</span>
+                        <span><b>Ekspor Excel (*.xls):</b> Backup rekapitulasi data sekali klik.</span>
                       </li>
                     </ul>
                   </div>
@@ -226,7 +228,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                   <div className="pt-3 border-t border-amber-200 dark:border-amber-800/60">
                     {isPro ? (
                       <div className="w-full py-2.5 text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl">
-                        ✓ Akun Anda Sudah Aktif Sebagai PRO
+                        ✓ Akun Anda Sudah Aktif Sebagai PRO (2 Tahun)
                       </div>
                     ) : (
                       <button
@@ -235,7 +237,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-xs shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <QrCode className="w-4 h-4" />
-                        <span>Upgrade Sekarang (QRIS Rp 4.000)</span>
+                        <span>Upgrade Sekarang (QRIS Rp 4.000 / 2 Tahun)</span>
                         <ArrowRight className="w-4 h-4 ml-auto" />
                       </button>
                     )}
@@ -334,9 +336,10 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
                   <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Total Pembayaran:</span>
+                      <span className="text-slate-400">Total Pembayaran (2 Tahun):</span>
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-extrabold text-amber-600 dark:text-amber-400">Rp 4.000</span>
+                        <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">2 Tahun</span>
                         <button
                           onClick={copyAmount}
                           className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white"
@@ -356,13 +359,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                     <li>Pilih menu <b>Scan QRIS</b> dan arahkan kamera ke kode QR di samping.</li>
                     <li>Pastikan nama merchant: <b>LOGBOOK NAUFAL IRFANSYAH</b>.</li>
                     <li>Ketikkan nominal pas: <b>Rp 4.000</b> dan selesaikan pembayaran.</li>
-                    <li>Setelah transfer berhasil, klik tombol aktivasi di bawah!</li>
+                    <li>Setelah transfer berhasil, klik tombol aktivasi di bawah (Akun langsung aktif untuk masa <b>2 Tahun Penuh</b>)!</li>
                   </ol>
 
                   {/* WhatsApp Support note */}
                   <div className="pt-2">
                     <a
-                      href="https://wa.me/62895622288000?text=Halo%20Naufal,%20saya%20sudah%20transfer%20QRIS%20Rp%204.000%20untuk%20aktivasi%20Logbook%20PRO"
+                      href="https://wa.me/62895622288000?text=Halo%20Naufal,%20saya%20sudah%20transfer%20QRIS%20Rp%204.000%20untuk%20aktivasi%20Logbook%20PRO%202%20Tahun"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
