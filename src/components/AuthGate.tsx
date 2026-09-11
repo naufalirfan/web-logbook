@@ -108,13 +108,13 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             <BookOpen className="w-7 h-7" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Logbook <span className="text-blue-600 dark:text-blue-400">RSGM UMY</span>
+            Logbook <span className="text-blue-600 dark:text-blue-400">By Naufal</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium max-w-sm mx-auto">
-            Naufal Irfansyah Saputra • Poltekkes Tanjungkarang D3 Teknik Gigi
+            Naufal Irfansyah Saputra
           </p>
           <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
-            Sistem Catatan Harian & Presensi Magang Laboratorium Teknik Gigi
+            Sistem Catatan Harian & Presensi Magang
           </p>
         </div>
 

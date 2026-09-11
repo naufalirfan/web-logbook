@@ -13,8 +13,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Logbook Magang RSGM UMY • Naufal Irfansyah Saputra',
-  description: 'Logbook Praktik Magang Laboratorium Teknik Gigi di RSGM UMY - Naufal Irfansyah Saputra (Poltekkes Tanjungkarang D3 Teknik Gigi)',
+  title: 'Logbook By Naufal • Naufal Irfansyah Saputra',
+  description: 'Sistem Catatan Harian & Presensi Magang - Logbook By Naufal',
 };
 
 export default function RootLayout({

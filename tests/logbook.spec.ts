@@ -5,15 +5,15 @@ test.describe('Web Logbook Suite', () => {
     await page.goto('/');
 
     // Check title and branding
-    await expect(page).toHaveTitle(/Logbook Magang RSGM UMY/i);
+    await expect(page).toHaveTitle(/Logbook By Naufal/i);
     
     // AuthGate header check
-    const heading = page.getByRole('heading', { name: /Logbook RSGM UMY/i });
+    const heading = page.getByRole('heading', { name: /Logbook By Naufal/i });
     await expect(heading).toBeVisible();
 
     // Verify student profile details in gate
     await expect(page.getByText(/Naufal Irfansyah Saputra/i).first()).toBeVisible();
-    await expect(page.getByText(/D3 Teknik Gigi/i).first()).toBeVisible();
+    await expect(page.getByText(/Sistem Catatan Harian & Presensi Magang/i).first()).toBeVisible();
 
     // Verify login action buttons exist
     await expect(page.getByText(/Google Client ID Terhubung/i)).toBeVisible();
