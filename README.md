@@ -136,6 +136,28 @@ Jika ingin mengaktifkan database cloud PostgreSQL:
 
 ---
 
+## 🧪 End-to-End Testing (Playwright)
+
+Project ini telah dilengkapi dengan suite pengujian otomatis end-to-end menggunakan **Playwright**:
+
+```bash
+# Menjalankan seluruh pengujian otomatis E2E
+npm test
+
+# Menjalankan pengujian dengan Interactive UI Mode
+npm run test:ui
+
+# Melihat laporan visual hasil pengujian Playwright
+npm run test:report
+```
+
+Suite pengujian mencakup:
+- ✅ Verifikasi tampilan AuthGate & komponen login
+- ✅ Verifikasi login Super Admin (`naufalfaster@gmail.com`) beserta hak akses PRO
+- ✅ Verifikasi alur dashboard Mahasiswa (Free Tier)
+
+---
+
 ## 🤝 Berkontribusi
 
 Kontribusi selalu disambut dengan baik!
