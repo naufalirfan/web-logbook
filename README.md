@@ -23,11 +23,15 @@
 
 ## 📸 Tampilan Aplikasi
 
-### 1. Dashboard Utama & Pelacak Aktivitas Harian
-Pelacakan jam kegiatan, progress target semester, filter kategori, serta evaluasi pembimbing.
+### 1. Gerbang Autentikasi & Verifikasi Akses (Auth Gate)
+Sistem pengamanan awal dengan integrasi Google OAuth, auto-profiling akun, verifikasi Super Admin (`naufalfaster@gmail.com`), serta mode uji coba cepat.
+![Auth Gate Preview](./public/screenshots/authgate-preview.png)
+
+### 2. Dashboard Utama & Pelacak Aktivitas Harian
+Pelacakan jam kegiatan, progress target semester, filter kategori, serta evaluasi pembimbing klinik.
 ![Dashboard Preview](./public/screenshots/dashboard-preview.png)
 
-### 2. Format Laporan Resmi Siap Cetak (A4 Standard)
+### 3. Format Laporan Resmi Siap Cetak (A4 Standard)
 Dilengkapi KOP Surat Resmi Institusi, rekap jam kerja, dan kolom tanda tangan (Mahasiswa, Pembimbing Klinik, dan DPL).
 ![Report Preview](./public/screenshots/report-preview.png)
 
