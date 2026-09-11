@@ -8,8 +8,7 @@ import {
   UserTier, 
   PROGRAM_CONFIGS, 
   isUserAdmin,
-  FREE_TIER_LIMITS,
-  PRO_TIER_LIMITS 
+  FREE_TIER_LIMITS
 } from '@/types/logbook';
 import { DEFAULT_PROFILES, DEFAULT_ENTRIES } from '@/lib/initialData';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
@@ -80,6 +79,84 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     setGoogleClientIdState(id);
     if (typeof window !== 'undefined') {
       localStorage.setItem('google_client_id', id);
+    }
+  }, []);
+
+  // Fetch Cloud data if Supabase is connected
+  const fetchCloudData = useCallback(async (userId: string) => {
+    if (!supabase) return;
+    try {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (profileData) {
+        const isSuper = isUserAdmin(profileData.email);
+        setProfiles(prev => ({
+          ...prev,
+          [profileData.program_type]: {
+            id: profileData.id,
+            email: profileData.email,
+            fullName: profileData.full_name,
+            nim: profileData.nim || '',
+            avatarUrl: profileData.avatar_url,
+            programType: profileData.program_type,
+            programTitle: profileData.program_title || '',
+            institution: profileData.institution || '',
+            partnerName: profileData.partner_name || '',
+            supervisorName: profileData.supervisor_name || '',
+            supervisorContact: profileData.supervisor_contact || '',
+            startDate: profileData.start_date || '',
+            endDate: profileData.end_date || '',
+            targetHours: Number(profileData.target_hours) || 500,
+            role: isSuper ? 'admin' : 'user',
+            tier: isSuper ? 'pro' : (profileData.tier || 'free')
+          }
+        }));
+      }
+
+      const { data: entriesData } = await supabase
+        .from('log_entries')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (entriesData) {
+        const grouped: Record<string, LogEntry[]> = {
+          magang: [],
+          kkn: [],
+          pkl: [],
+          skripsi: [],
+          mandiri: []
+        };
+
+        entriesData.forEach(row => {
+          const type = row.program_type as ProgramType;
+          if (grouped[type]) {
+            grouped[type].push({
+              id: row.id,
+              date: row.date,
+              startTime: row.start_time,
+              endTime: row.end_time,
+              durationHours: Number(row.duration_hours),
+              category: row.category,
+              title: row.title,
+              description: row.description,
+              achievements: row.achievements,
+              status: row.status,
+              imageUrl: row.image_url,
+              supervisorFeedback: row.supervisor_feedback,
+              createdAt: row.created_at,
+              updatedAt: row.updated_at
+            });
+          }
+        });
+
+        setAllEntries(grouped);
+      }
+    } catch (err) {
+      console.error('Error fetching Supabase data:', err);
     }
   }, []);
 
@@ -189,83 +266,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProgram, profiles, allEntries, user]);
 
-  // Fetch Cloud data if Supabase is connected
-  const fetchCloudData = async (userId: string) => {
-    if (!supabase) return;
-    try {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
 
-      if (profileData) {
-        const isSuper = isUserAdmin(profileData.email);
-        setProfiles(prev => ({
-          ...prev,
-          [profileData.program_type]: {
-            id: profileData.id,
-            email: profileData.email,
-            fullName: profileData.full_name,
-            nim: profileData.nim || '',
-            avatarUrl: profileData.avatar_url,
-            programType: profileData.program_type,
-            programTitle: profileData.program_title || '',
-            institution: profileData.institution || '',
-            partnerName: profileData.partner_name || '',
-            supervisorName: profileData.supervisor_name || '',
-            supervisorContact: profileData.supervisor_contact || '',
-            startDate: profileData.start_date || '',
-            endDate: profileData.end_date || '',
-            targetHours: Number(profileData.target_hours) || 500,
-            role: isSuper ? 'admin' : 'user',
-            tier: isSuper ? 'pro' : (profileData.tier || 'free')
-          }
-        }));
-      }
-
-      const { data: entriesData } = await supabase
-        .from('log_entries')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (entriesData) {
-        const grouped: Record<string, LogEntry[]> = {
-          magang: [],
-          kkn: [],
-          pkl: [],
-          skripsi: [],
-          mandiri: []
-        };
-
-        entriesData.forEach(row => {
-          const type = row.program_type as ProgramType;
-          if (grouped[type]) {
-            grouped[type].push({
-              id: row.id,
-              date: row.date,
-              startTime: row.start_time,
-              endTime: row.end_time,
-              durationHours: Number(row.duration_hours),
-              category: row.category,
-              title: row.title,
-              description: row.description,
-              achievements: row.achievements,
-              status: row.status,
-              imageUrl: row.image_url,
-              supervisorFeedback: row.supervisor_feedback,
-              createdAt: row.created_at,
-              updatedAt: row.updated_at
-            });
-          }
-        });
-
-        setAllEntries(grouped);
-      }
-    } catch (err) {
-      console.error('Error fetching Supabase data:', err);
-    }
-  };
 
   const switchProgram = useCallback((type: ProgramType) => {
     setActiveProgram(type);
@@ -435,7 +436,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       });
     } else {
       if (typeof window !== 'undefined') {
-        const googleObj = (window as unknown as { google?: { accounts: { id: any } } }).google;
+        const googleObj = (window as unknown as { google?: { accounts: { id: { prompt: () => void } } } }).google;
         if (googleObj?.accounts?.id) {
           googleObj.accounts.id.prompt();
         }

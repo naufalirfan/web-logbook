@@ -7,10 +7,7 @@ import {
   ExternalLink, 
   CheckCircle2, 
   Copy, 
-  Sparkles, 
-  ShieldCheck,
-  HelpCircle,
-  ArrowRight
+  Sparkles
 } from 'lucide-react';
 
 interface GoogleSetupModalProps {

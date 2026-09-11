@@ -8,16 +8,13 @@ import {
   Check, 
   Sparkles, 
   Crown, 
-  Zap, 
   QrCode, 
   ShieldCheck, 
   ArrowRight,
-  HelpCircle,
   Copy,
   CheckCircle2,
   PhoneCall,
-  Flame,
-  AlertTriangle
+  Flame
 } from 'lucide-react';
 
 interface UpgradeModalProps {
@@ -26,7 +23,7 @@ interface UpgradeModalProps {
 }
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
-  const { upgradeToPro, isPro, user } = useLogbook();
+  const { upgradeToPro, isPro } = useLogbook();
   const [activeTab, setActiveTab] = useState<'comparison' | 'qris'>('comparison');
   const [copiedPrice, setCopiedPrice] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
@@ -150,7 +147,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="w-4 h-4 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✕</span>
-                        <span><b>Watermark Laporan:</b> Ekspor lembar laporan resmi A4 terdapat cap <i>"VERSI FREE"</i>.</span>
+                        <span><b>Watermark Laporan:</b> Ekspor lembar laporan resmi A4 terdapat cap <i>&ldquo;VERSI FREE&rdquo;</i>.</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="w-4 h-4 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✕</span>

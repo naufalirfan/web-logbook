@@ -6,17 +6,12 @@ import GoogleSetupModal from '@/components/GoogleSetupModal';
 import { 
   BookOpen, 
   ShieldCheck, 
-  Sparkles, 
   Layers, 
   Clock, 
   FileSpreadsheet, 
   CheckCircle2, 
   Lock,
-  Crown,
-  UserCheck,
-  ArrowRight,
-  Key,
-  Settings
+  Key
 } from 'lucide-react';
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
@@ -27,8 +22,6 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     loginWithGoogleCredential,
     googleClientId,
     setGoogleClientId,
-    signInAsAdmin, 
-    signInAsDemoUser,
     isCloudConnected 
   } = useLogbook();
 
@@ -38,7 +31,11 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && googleClientId) {
       const initGsi = () => {
-        const googleObj = (window as unknown as { google?: { accounts: { id: any } } }).google;
+        interface GoogleAccountsId {
+          initialize: (config: { client_id: string; callback: (res: { credential?: string }) => void }) => void;
+          renderButton: (container: HTMLElement, options: Record<string, string | number>) => void;
+        }
+        const googleObj = (window as unknown as { google?: { accounts: { id: GoogleAccountsId } } }).google;
         if (googleObj?.accounts?.id) {
           try {
             googleObj.accounts.id.initialize({

@@ -10,8 +10,6 @@ import {
   Filter, 
   Calendar, 
   Clock, 
-  CheckCircle2, 
-  FileEdit, 
   Trash2, 
   Plus, 
   Image as ImageIcon,

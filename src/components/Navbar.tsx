@@ -10,7 +10,6 @@ import {
   PlusCircle, 
   FileText, 
   Settings, 
-  LogIn, 
   LogOut, 
   Cloud, 
   CloudOff, 
@@ -19,7 +18,6 @@ import {
   Menu,
   X,
   Crown,
-  ShieldAlert,
   Zap,
   Sparkles
 } from 'lucide-react';
@@ -35,8 +33,6 @@ export default function Navbar() {
     isAuthenticated,
     isAdmin,
     isPro,
-    userTier,
-    signInWithGoogle, 
     signOut, 
     isCloudConnected 
   } = useLogbook();
