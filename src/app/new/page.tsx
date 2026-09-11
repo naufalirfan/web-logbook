@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogbook } from '@/context/LogbookContext';
+import { EntryStatus } from '@/types/logbook';
 import confetti from 'canvas-confetti';
 import UpgradeModal from '@/components/UpgradeModal';
 import IndonesianDatePicker from '@/components/IndonesianDatePicker';
@@ -24,7 +25,7 @@ import Link from 'next/link';
 
 export default function NewEntryPage() {
   const router = useRouter();
-  const { addEntry, programConfig, canAddEntry, isPro, maxFreeEntries } = useLogbook();
+  const { addEntry, programConfig, canAddEntry, isPro, maxFreeEntries, isAdmin } = useLogbook();
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
@@ -37,9 +38,16 @@ export default function NewEntryPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [achievements, setAchievements] = useState('');
-  const [status, setStatus] = useState<'draft' | 'submitted'>('submitted');
+  const [status, setStatus] = useState<EntryStatus>('submitted');
   const [imageUrl, setImageUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-set status to 'approved' for Super Admin
+  useEffect(() => {
+    if (isAdmin) {
+      setStatus('approved');
+    }
+  }, [isAdmin]);
 
   // Auto calculate duration in hours
   const calculateDuration = (start: string, end: string): number => {
@@ -396,7 +404,21 @@ export default function NewEntryPage() {
 
           {/* Row 7: Status Simpan */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              {isAdmin && (
+                <label className="flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-700/60 cursor-pointer shadow-xs transition-all hover:bg-emerald-100 dark:hover:bg-emerald-900/40">
+                  <input
+                    type="radio"
+                    name="status"
+                    value="approved"
+                    checked={status === 'approved'}
+                    onChange={() => setStatus('approved')}
+                    className="text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span>👑 Langsung Terverifikasi (Disetujui)</span>
+                </label>
+              )}
+
               <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
                 <input
                   type="radio"

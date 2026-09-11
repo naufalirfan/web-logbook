@@ -99,6 +99,8 @@ export const PROGRAM_CONFIGS: Record<ProgramType, ProgramConfig> = {
   }
 };
 
+export type EntryStatus = 'draft' | 'submitted' | 'approved';
+
 export interface LogEntry {
   id: string;
   date: string; // YYYY-MM-DD
@@ -109,7 +111,7 @@ export interface LogEntry {
   title: string;
   description: string;
   achievements?: string;
-  status: 'draft' | 'submitted' | 'approved';
+  status: EntryStatus;
   imageUrl?: string;
   supervisorFeedback?: string;
   createdAt: string;
