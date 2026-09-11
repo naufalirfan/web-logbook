@@ -19,7 +19,9 @@ import {
   X,
   Crown,
   Zap,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 
@@ -41,6 +43,29 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (typeof document !== 'undefined') {
+      if (nextDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+  };
 
   // Auto-display promo upgrade popup for Free tier users shortly after login
   useEffect(() => {
@@ -220,6 +245,20 @@ export default function Navbar() {
               </div>
             )}
 
+            {/* Theme Toggle (Gelap / Terang) */}
+            <button
+              onClick={toggleTheme}
+              aria-label={isDark ? "Beralih ke mode terang" : "Beralih ke mode gelap"}
+              title={isDark ? "Mode Terang" : "Mode Gelap"}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-800"
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-300" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600 animate-in spin-in-90 duration-300" />
+              )}
+            </button>
+
             {/* Google Login / User Profile */}
             {user ? (
               <div className="relative">
@@ -329,6 +368,29 @@ export default function Navbar() {
               </Link>
             );
           })}
+
+          {/* Mobile Theme Toggle */}
+          <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 py-2">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Mode Tampilan
+            </span>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
+            >
+              {isDark ? (
+                <>
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Mode Terang</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+                  <span>Mode Gelap</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
       {/* Upgrade Modal */}
