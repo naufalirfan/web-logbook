@@ -365,13 +365,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                   {/* WhatsApp Support note */}
                   <div className="pt-2">
                     <a
-                      href="https://wa.me/62895622288000?text=Halo%20Naufal,%20saya%20sudah%20transfer%20QRIS%20Rp%204.000%20untuk%20aktivasi%20Logbook%20PRO%202%20Tahun"
+                      href="https://wa.me/6285215900094?text=Halo%20Naufal,%20saya%20sudah%20transfer%20QRIS%20Rp%204.000%20untuk%20aktivasi%20Logbook%20PRO%202%20Tahun"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
                     >
                       <PhoneCall className="w-3.5 h-3.5" />
-                      <span>Kirim bukti transfer ke WhatsApp Naufal (Opsional)</span>
+                      <span>Kirim bukti transfer ke WhatsApp Naufal (0852-1590-0094)</span>
                     </a>
                   </div>
                 </div>
