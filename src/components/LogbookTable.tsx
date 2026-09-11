@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLogbook } from '@/context/LogbookContext';
 import { LogEntry } from '@/types/logbook';
 import ImageModal from '@/components/ImageModal';
+import EditLogbookModal from '@/components/EditLogbookModal';
 import { 
   Search, 
   Filter, 
@@ -18,7 +19,8 @@ import {
   ArrowUpDown,
   Crown,
   CheckCheck,
-  Send
+  Send,
+  Pencil
 } from 'lucide-react';
 
 export default function LogbookTable() {
@@ -35,6 +37,9 @@ export default function LogbookTable() {
 
   // Image Lightbox State
   const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+
+  // Edit Logbook Entry Modal State
+  const [editingEntry, setEditingEntry] = useState<LogEntry | null>(null);
 
   // Available categories based on current entries + config defaults
   const categories = useMemo(() => {
@@ -376,9 +381,19 @@ export default function LogbookTable() {
                       </button>
                     )}
 
+                    {/* Edit Logbook Button */}
+                    <button
+                      onClick={() => setEditingEntry(entry)}
+                      className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-colors border border-blue-200 dark:border-blue-800/60"
+                      title="Edit / Ubah Isi Catatan Ini"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
+
                     <button
                       onClick={() => handleDelete(entry.id, entry.title)}
-                      className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors"
                       title="Hapus Catatan"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -402,6 +417,13 @@ export default function LogbookTable() {
           onClose={() => setPreviewImage(null)}
         />
       )}
+
+      {/* Edit Entry Modal */}
+      <EditLogbookModal
+        isOpen={Boolean(editingEntry)}
+        entry={editingEntry}
+        onClose={() => setEditingEntry(null)}
+      />
 
     </div>
   );
