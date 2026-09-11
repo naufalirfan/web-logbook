@@ -71,7 +71,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>(DEFAULT_PROFILES);
   const [allEntries, setAllEntries] = useState<Record<string, LogEntry[]>>(DEFAULT_ENTRIES);
   const [user, setUser] = useState<User | null>(null);
-  const [googleClientId, setGoogleClientIdState] = useState<string>('');
+  const [googleClientId, setGoogleClientIdState] = useState<string>(
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '421276748294-3stmc79dgpq72uqqr3glsupqtghrqg4m.apps.googleusercontent.com'
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   const setGoogleClientId = useCallback((id: string) => {
@@ -104,7 +106,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         setUser(JSON.parse(savedUser));
       }
 
-      const savedClientId = localStorage.getItem('google_client_id') || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+      const savedClientId = localStorage.getItem('google_client_id') || 
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 
+        '421276748294-3stmc79dgpq72uqqr3glsupqtghrqg4m.apps.googleusercontent.com';
       if (savedClientId) {
         setGoogleClientIdState(savedClientId);
       }
