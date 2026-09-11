@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLogbook } from '@/context/LogbookContext';
@@ -45,6 +45,20 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+
+  // Auto-display promo upgrade popup for Free tier users shortly after login
+  useEffect(() => {
+    if (isAuthenticated && !isPro) {
+      const hasSeen = sessionStorage.getItem('seen_pro_upgrade_popup');
+      if (!hasSeen) {
+        const timer = setTimeout(() => {
+          setIsUpgradeOpen(true);
+          sessionStorage.setItem('seen_pro_upgrade_popup', 'true');
+        }, 900);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isAuthenticated, isPro]);
 
   const navLinks = [
     { href: '/', label: 'Dashboard', icon: BookOpen },

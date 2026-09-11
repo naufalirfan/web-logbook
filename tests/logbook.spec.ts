@@ -16,7 +16,7 @@ test.describe('Web Logbook Suite', () => {
     await expect(page.getByText(/D3 Teknik Gigi/i).first()).toBeVisible();
 
     // Verify login action buttons exist
-    await expect(page.getByText(/Masuk dengan Google/i)).toBeVisible();
+    await expect(page.getByText(/Google Client ID Terhubung/i)).toBeVisible();
     await expect(page.getByText(/Masuk sebagai naufalfaster@gmail.com/i)).toBeVisible();
     await expect(page.getByText(/Masuk sebagai Naufal Irfansyah Saputra/i)).toBeVisible();
   });
