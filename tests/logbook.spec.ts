@@ -15,9 +15,10 @@ test.describe('Web Logbook Suite', () => {
     await expect(page.getByText(/Naufal Irfansyah Saputra/i).first()).toBeVisible();
     await expect(page.getByText(/Sistem Catatan Harian & Presensi Magang/i).first()).toBeVisible();
 
-    // Verify Google Client ID is active and official security note is shown
-    await expect(page.getByText(/Google Client ID Terhubung/i)).toBeVisible();
+    // Verify official security note is shown and setup modals/client id buttons are completely hidden
     await expect(page.getByText(/Autentikasi Resmi Google OAuth/i)).toBeVisible();
+    await expect(page.getByText(/Google Client ID Terhubung/i)).not.toBeVisible();
+    await expect(page.getByRole('button', { name: /Ubah/i })).not.toBeVisible();
 
     // Ensure bypass buttons DO NOT exist
     await expect(page.getByText(/Akses Cepat Pengujian/i)).not.toBeVisible();
