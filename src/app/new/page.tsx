@@ -33,7 +33,13 @@ export default function NewEntryPage() {
   const [date, setDate] = useState(today);
   const [startTime, setStartTime] = useState('08:30');
   const [endTime, setEndTime] = useState('17:00');
-  const [category, setCategory] = useState(programConfig.defaultCategories[0] || 'Aktivitas Utama');
+  const [category, setCategory] = useState(programConfig?.defaultCategories?.[0] || 'Aktivitas Utama');
+
+  useEffect(() => {
+    if (programConfig?.defaultCategories?.length) {
+      setCategory(programConfig.defaultCategories[0]);
+    }
+  }, [programConfig]);
   const [customCategory, setCustomCategory] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -284,7 +290,7 @@ export default function NewEntryPage() {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
             >
-              {programConfig.defaultCategories.map((c) => (
+              {(programConfig?.defaultCategories || []).map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
               <option value="__custom__">+ Kategori Kustom Lainnya...</option>

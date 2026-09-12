@@ -1,10 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   LogEntry, 
   UserProfile, 
   ProgramType, 
+  DefaultProgramType,
+  ProgramConfig,
   UserTier, 
   PROGRAM_CONFIGS, 
   isUserAdmin,
@@ -17,10 +19,11 @@ import type { User } from '@supabase/supabase-js';
 
 interface LogbookContextType {
   activeProgram: ProgramType;
+  programs: Record<string, ProgramConfig>;
   profile: UserProfile;
   entries: LogEntry[];
   allEntries: Record<string, LogEntry[]>;
-  programConfig: typeof PROGRAM_CONFIGS[ProgramType];
+  programConfig: ProgramConfig;
   isLoading: boolean;
   isCloudConnected: boolean;
   user: User | null;
@@ -32,6 +35,8 @@ interface LogbookContextType {
   canAddEntry: boolean;
   upgradeToPro: () => void;
   switchProgram: (type: ProgramType) => void;
+  addCustomProgram: (config: Omit<ProgramConfig, 'id'> & { id?: string }) => Promise<void>;
+  deleteCustomProgram: (id: string) => Promise<void>;
   updateProfile: (updated: Partial<UserProfile>) => void;
   addEntry: (entry: Omit<LogEntry, 'id' | 'createdAt'>) => Promise<LogEntry>;
   updateEntry: (id: string, updated: Partial<LogEntry>) => Promise<void>;
@@ -60,13 +65,73 @@ const LogbookContext = createContext<LogbookContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
   ACTIVE_PROGRAM: 'logbook_active_program',
-  PROFILES: 'logbook_profiles',
-  ENTRIES: 'logbook_entries',
   ACTIVE_USER: 'logbook_active_user',
+  CUSTOM_PROGRAMS: 'logbook_custom_programs',
+};
+
+// User-scoped LocalStorage Key Helpers
+const getUserStorageKey = (prefix: string, currentUser: User | null): string => {
+  if (!currentUser) return `${prefix}_guest`;
+  const sanitizedId = currentUser.id || currentUser.email?.replace(/[^a-zA-Z0-9]/g, '_') || 'user';
+  return `${prefix}_${sanitizedId}`;
+};
+
+// Generate default profile structure for a given user
+const createInitialProfilesForUser = (targetUser: User | null, allPrograms: Record<string, ProgramConfig>): Record<string, UserProfile> => {
+  if (!targetUser) {
+    return DEFAULT_PROFILES;
+  }
+
+  const isSuper = isUserAdmin(targetUser.email);
+  const baseName = targetUser.user_metadata?.full_name || targetUser.user_metadata?.name || targetUser.email?.split('@')[0] || 'Pengguna';
+  const baseAvatar = targetUser.user_metadata?.avatar_url || targetUser.user_metadata?.picture || '';
+  const email = targetUser.email || '';
+
+  if (isSuper) {
+    return {
+      ...DEFAULT_PROFILES,
+      magang: {
+        ...DEFAULT_PROFILES.magang,
+        id: targetUser.id,
+        email: email,
+        fullName: 'Naufal Irfansyah Saputra',
+        nim: '2412401021',
+        avatarUrl: baseAvatar || DEFAULT_PROFILES.magang.avatarUrl,
+        role: 'admin',
+        tier: 'pro'
+      }
+    };
+  }
+
+  const result: Record<string, UserProfile> = {};
+  Object.keys(allPrograms).forEach((key) => {
+    const config = allPrograms[key];
+    result[key] = {
+      id: targetUser.id,
+      email: email,
+      fullName: baseName,
+      nim: '',
+      avatarUrl: baseAvatar,
+      programType: key,
+      programTitle: `Logbook ${config?.label || key}`,
+      institution: '',
+      partnerName: '',
+      supervisorName: '',
+      supervisorContact: '',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: '',
+      targetHours: config?.suggestedTargetHours || 300,
+      role: 'user',
+      tier: 'free'
+    };
+  });
+
+  return result;
 };
 
 export function LogbookProvider({ children }: { children: React.ReactNode }) {
   const [activeProgram, setActiveProgram] = useState<ProgramType>('magang');
+  const [customPrograms, setCustomPrograms] = useState<Record<string, ProgramConfig>>({});
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>(DEFAULT_PROFILES);
   const [allEntries, setAllEntries] = useState<Record<string, LogEntry[]>>(DEFAULT_ENTRIES);
   const [user, setUser] = useState<User | null>(null);
@@ -75,6 +140,14 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState(true);
 
+  // Combined programs (built-in + custom)
+  const allPrograms = useMemo<Record<string, ProgramConfig>>(() => {
+    return {
+      ...PROGRAM_CONFIGS,
+      ...customPrograms
+    };
+  }, [customPrograms]);
+
   const setGoogleClientId = useCallback((id: string) => {
     setGoogleClientIdState(id);
     if (typeof window !== 'undefined') {
@@ -82,10 +155,11 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Fetch Cloud data if Supabase is connected
+  // Fetch Cloud data for this specific user if Supabase is connected
   const fetchCloudData = useCallback(async (userId: string) => {
     if (!supabase) return;
     try {
+      // 1. Fetch user's profile
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -121,80 +195,178 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         }));
       }
 
+      // 2. Fetch log entries STRICTLY FOR THIS USER_ID (1 user 1 logbook)
       const { data: entriesData } = await supabase
         .from('log_entries')
         .select('*')
+        .eq('user_id', userId)
         .order('date', { ascending: false });
 
       if (entriesData) {
-        const grouped: Record<string, LogEntry[]> = {
-          magang: [],
-          kkn: [],
-          pkl: [],
-          skripsi: [],
-          mandiri: []
-        };
-
+        const grouped: Record<string, LogEntry[]> = {};
         entriesData.forEach(row => {
-          const type = row.program_type as ProgramType;
-          if (grouped[type]) {
-            grouped[type].push({
-              id: row.id,
-              date: row.date,
-              startTime: row.start_time,
-              endTime: row.end_time,
-              durationHours: Number(row.duration_hours),
-              category: row.category,
-              title: row.title,
-              description: row.description,
-              achievements: row.achievements,
-              status: row.status,
-              imageUrl: row.image_url,
-              supervisorFeedback: row.supervisor_feedback,
-              createdAt: row.created_at,
-              updatedAt: row.updated_at
-            });
+          const type = row.program_type;
+          if (!grouped[type]) {
+            grouped[type] = [];
           }
+          grouped[type].push({
+            id: row.id,
+            date: row.date,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            durationHours: Number(row.duration_hours),
+            category: row.category,
+            title: row.title,
+            description: row.description,
+            achievements: row.achievements,
+            status: row.status,
+            imageUrl: row.image_url,
+            supervisorFeedback: row.supervisor_feedback,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+          });
         });
 
         setAllEntries(grouped);
+      }
+
+      // 3. Fetch custom programs from Supabase if table exists
+      try {
+        const { data: customProgData } = await supabase
+          .from('custom_programs')
+          .select('*');
+
+        if (customProgData && Array.isArray(customProgData)) {
+          const mapped: Record<string, ProgramConfig> = {};
+          customProgData.forEach(p => {
+            mapped[p.id] = {
+              id: p.id,
+              label: p.label,
+              badgeColor: p.badge_color || 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+              supervisorLabel: p.supervisor_label || 'Pembimbing / Mentor',
+              partnerLabel: p.partner_label || 'Instansi / Mitra',
+              defaultCategories: Array.isArray(p.default_categories) ? p.default_categories : ['Aktivitas Utama'],
+              suggestedTargetHours: Number(p.suggested_target_hours) || 300,
+              description: p.description || '',
+              isCustom: true
+            };
+          });
+          setCustomPrograms(prev => {
+            const merged = { ...prev, ...mapped };
+            if (typeof window !== 'undefined') {
+              localStorage.setItem(STORAGE_KEYS.CUSTOM_PROGRAMS, JSON.stringify(merged));
+            }
+            return merged;
+          });
+        }
+      } catch {
+        // Table custom_programs might not exist yet; gracefully handled
       }
     } catch (err) {
       console.error('Error fetching Supabase data:', err);
     }
   }, []);
 
-  // Initialize from LocalStorage or Supabase
-  useEffect(() => {
+  // Helper to load user-scoped data from LocalStorage
+  const loadScopedUserData = useCallback((targetUser: User | null, currentCustoms: Record<string, ProgramConfig>) => {
+    if (typeof window === 'undefined') return;
     try {
-      const savedProgram = localStorage.getItem(STORAGE_KEYS.ACTIVE_PROGRAM) as ProgramType;
-      if (savedProgram && PROGRAM_CONFIGS[savedProgram]) {
-        setActiveProgram(savedProgram);
-      }
+      const activeProgramsMap = { ...PROGRAM_CONFIGS, ...currentCustoms };
+      const entriesKey = getUserStorageKey('logbook_entries', targetUser);
+      const profilesKey = getUserStorageKey('logbook_profiles', targetUser);
 
-      const savedProfiles = localStorage.getItem(STORAGE_KEYS.PROFILES);
-      if (savedProfiles) {
-        try {
-          const parsed = JSON.parse(savedProfiles);
-          if (parsed.magang && (parsed.magang.nim === '2313451001' || !parsed.magang.nim)) {
-            parsed.magang.nim = '2412401021';
-            localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(parsed));
+      if (targetUser) {
+        // Specific logged-in user
+        const savedEntries = localStorage.getItem(entriesKey);
+        if (savedEntries) {
+          try {
+            setAllEntries(JSON.parse(savedEntries));
+          } catch {
+            setAllEntries({});
           }
-          setProfiles(parsed);
-        } catch {
+        } else {
+          // A newly logged in user starts with clean empty entries (1 user 1 logbook)
+          // Exception: Super Admin defaults to RSGM demo entries if brand new
+          if (isUserAdmin(targetUser.email)) {
+            setAllEntries(DEFAULT_ENTRIES);
+          } else {
+            setAllEntries({});
+          }
+        }
+
+        const savedProfiles = localStorage.getItem(profilesKey);
+        if (savedProfiles) {
+          try {
+            setProfiles(JSON.parse(savedProfiles));
+          } catch {
+            setProfiles(createInitialProfilesForUser(targetUser, activeProgramsMap));
+          }
+        } else {
+          setProfiles(createInitialProfilesForUser(targetUser, activeProgramsMap));
+        }
+      } else {
+        // Guest mode / not logged in
+        const savedEntries = localStorage.getItem(entriesKey);
+        if (savedEntries) {
+          try {
+            setAllEntries(JSON.parse(savedEntries));
+          } catch {
+            setAllEntries(DEFAULT_ENTRIES);
+          }
+        } else {
+          setAllEntries(DEFAULT_ENTRIES);
+        }
+
+        const savedProfiles = localStorage.getItem(profilesKey);
+        if (savedProfiles) {
+          try {
+            setProfiles(JSON.parse(savedProfiles));
+          } catch {
+            setProfiles(DEFAULT_PROFILES);
+          }
+        } else {
           setProfiles(DEFAULT_PROFILES);
         }
       }
+    } catch (e) {
+      console.warn('Could not read user data from localStorage', e);
+    }
+  }, []);
 
-      const savedEntries = localStorage.getItem(STORAGE_KEYS.ENTRIES);
-      if (savedEntries) {
-        setAllEntries(JSON.parse(savedEntries));
+  // Initialize custom programs and user session
+  useEffect(() => {
+    let initialCustoms: Record<string, ProgramConfig> = {};
+    try {
+      // 1. Load custom programs
+      const savedCustoms = localStorage.getItem(STORAGE_KEYS.CUSTOM_PROGRAMS);
+      if (savedCustoms) {
+        try {
+          initialCustoms = JSON.parse(savedCustoms);
+          setCustomPrograms(initialCustoms);
+        } catch {
+          initialCustoms = {};
+        }
       }
 
-      const savedUser = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER);
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
+      // 2. Load active program
+      const savedProgram = localStorage.getItem(STORAGE_KEYS.ACTIVE_PROGRAM) as ProgramType;
+      if (savedProgram) {
+        setActiveProgram(savedProgram);
       }
+
+      // 3. Load active user
+      const savedUserStr = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER);
+      let initialUser: User | null = null;
+      if (savedUserStr) {
+        try {
+          initialUser = JSON.parse(savedUserStr);
+          setUser(initialUser);
+        } catch {
+          initialUser = null;
+        }
+      }
+
+      loadScopedUserData(initialUser, initialCustoms);
 
       const savedClientId = localStorage.getItem('google_client_id') || 
         process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 
@@ -203,28 +375,30 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         setGoogleClientIdState(savedClientId);
       }
     } catch (e) {
-      console.warn('Could not read from localStorage', e);
+      console.warn('Could not initialize localStorage', e);
     }
 
     if (isSupabaseConfigured && supabase) {
-      // Check current session from Supabase
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
           setUser(session.user);
           localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(session.user));
+          loadScopedUserData(session.user, initialCustoms);
           fetchCloudData(session.user.id);
         }
         setIsLoading(false);
       });
 
-      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
         if (session?.user) {
           setUser(session.user);
           localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(session.user));
+          loadScopedUserData(session.user, initialCustoms);
           fetchCloudData(session.user.id);
-        } else {
+        } else if (event === 'SIGNED_OUT') {
           setUser(null);
           localStorage.removeItem(STORAGE_KEYS.ACTIVE_USER);
+          loadScopedUserData(null, initialCustoms);
         }
       });
 
@@ -234,9 +408,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     } else {
       setIsLoading(false);
     }
-  }, []);
+  }, [fetchCloudData, loadScopedUserData]);
 
-  // Automatically adjust profile name, email, avatar & tier when Google User signs in
+  // Adjust profile with Google User metadata on change
   useEffect(() => {
     if (user) {
       const googleName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || '';
@@ -249,7 +423,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         Object.keys(updated).forEach(key => {
           updated[key] = {
             ...updated[key],
-            fullName: googleName || updated[key].fullName,
+            fullName: isSuper ? updated[key].fullName || 'Naufal Irfansyah Saputra' : (googleName || updated[key].fullName),
             email: googleEmail || updated[key].email,
             avatarUrl: googleAvatar || updated[key].avatarUrl,
             role: isSuper ? 'admin' : updated[key].role || 'user',
@@ -261,13 +435,15 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Sync to LocalStorage whenever state changes
+  // Sync to user-scoped LocalStorage whenever state changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !isLoading) {
       try {
+        const entriesKey = getUserStorageKey('logbook_entries', user);
+        const profilesKey = getUserStorageKey('logbook_profiles', user);
         localStorage.setItem(STORAGE_KEYS.ACTIVE_PROGRAM, activeProgram);
-        localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
-        localStorage.setItem(STORAGE_KEYS.ENTRIES, JSON.stringify(allEntries));
+        localStorage.setItem(profilesKey, JSON.stringify(profiles));
+        localStorage.setItem(entriesKey, JSON.stringify(allEntries));
         if (user) {
           localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(user));
         } else {
@@ -277,17 +453,94 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         console.warn('Could not write to localStorage', e);
       }
     }
-  }, [activeProgram, profiles, allEntries, user]);
-
-
+  }, [activeProgram, profiles, allEntries, user, isLoading]);
 
   const switchProgram = useCallback((type: ProgramType) => {
     setActiveProgram(type);
   }, []);
 
+  // Super User function: Add Custom Program
+  const addCustomProgram = useCallback(async (config: Omit<ProgramConfig, 'id'> & { id?: string }) => {
+    const slugId = config.id || config.label.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `program-${Date.now()}`;
+    const newProg: ProgramConfig = {
+      ...config,
+      id: slugId,
+      isCustom: true
+    };
+
+    setCustomPrograms(prev => {
+      const next = { ...prev, [slugId]: newProg };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_PROGRAMS, JSON.stringify(next));
+      }
+      return next;
+    });
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('custom_programs').upsert({
+          id: slugId,
+          label: newProg.label,
+          badge_color: newProg.badgeColor,
+          supervisor_label: newProg.supervisorLabel,
+          partner_label: newProg.partnerLabel,
+          default_categories: newProg.defaultCategories,
+          suggested_target_hours: newProg.suggestedTargetHours,
+          description: newProg.description
+        });
+      } catch (err) {
+        console.warn('Supabase custom_programs sync note:', err);
+      }
+    }
+  }, []);
+
+  // Super User function: Delete Custom Program
+  const deleteCustomProgram = useCallback(async (id: string) => {
+    if (PROGRAM_CONFIGS[id as DefaultProgramType]) {
+      alert('Program bawaan sistem tidak dapat dihapus.');
+      return;
+    }
+
+    setCustomPrograms(prev => {
+      const next = { ...prev };
+      delete next[id];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_PROGRAMS, JSON.stringify(next));
+      }
+      return next;
+    });
+
+    if (activeProgram === id) {
+      setActiveProgram('magang');
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('custom_programs').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase custom_programs delete note:', err);
+      }
+    }
+  }, [activeProgram]);
+
   const updateProfile = useCallback((updated: Partial<UserProfile>) => {
     setProfiles(prev => {
-      const current = prev[activeProgram] || DEFAULT_PROFILES[activeProgram];
+      const current = prev[activeProgram] || {
+        id: user?.id || 'user',
+        email: user?.email || '',
+        fullName: user?.user_metadata?.full_name || '',
+        nim: '',
+        programType: activeProgram,
+        programTitle: `Logbook ${allPrograms[activeProgram]?.label || activeProgram}`,
+        institution: '',
+        partnerName: '',
+        supervisorName: '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: '',
+        targetHours: allPrograms[activeProgram]?.suggestedTargetHours || 300,
+        role: isUserAdmin(user?.email) ? 'admin' : 'user',
+        tier: isUserAdmin(user?.email) ? 'pro' : 'free'
+      };
       const updatedProfile = { ...current, ...updated };
       return {
         ...prev,
@@ -314,7 +567,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         if (error) console.error('Error updating profile in Supabase:', error);
       });
     }
-  }, [activeProgram, user]);
+  }, [activeProgram, user, allPrograms]);
 
   // Upgrade user to PRO tier
   const upgradeToPro = useCallback(() => {
@@ -400,7 +653,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     setAllEntries(prev => {
       const updatedAll: Record<string, LogEntry[]> = {};
       Object.keys(prev).forEach(key => {
-        updatedAll[key] = prev[key].map(item => {
+        updatedAll[key] = (prev[key] || []).map(item => {
           if (item.id === id) {
             return {
               ...item,
@@ -477,8 +730,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(realGoogleUser));
     }
+    loadScopedUserData(realGoogleUser, customPrograms);
     return true;
-  }, []);
+  }, [customPrograms, loadScopedUserData]);
 
   // Quick helper to sign in directly as Admin: naufalfaster@gmail.com
   const signInAsAdmin = useCallback(() => {
@@ -492,7 +746,11 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       }
     } as unknown as User;
     setUser(adminUser);
-  }, []);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(adminUser));
+    }
+    loadScopedUserData(adminUser, customPrograms);
+  }, [customPrograms, loadScopedUserData]);
 
   const signInAsDemoUser = useCallback(() => {
     const regularUser = {
@@ -504,7 +762,11 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       }
     } as unknown as User;
     setUser(regularUser);
-  }, []);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(regularUser));
+    }
+    loadScopedUserData(regularUser, customPrograms);
+  }, [customPrograms, loadScopedUserData]);
 
   const signOut = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
@@ -514,15 +776,33 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEYS.ACTIVE_USER);
     }
-  }, []);
+    loadScopedUserData(null, customPrograms);
+  }, [customPrograms, loadScopedUserData]);
 
   const isAdmin = isUserAdmin(user?.email);
   const isAuthenticated = Boolean(user);
 
   // Compute Active Stats & Tier info
   const currentEntries = allEntries[activeProgram] || [];
-  const currentProfile = profiles[activeProgram] || DEFAULT_PROFILES[activeProgram];
-  const programConfig = PROGRAM_CONFIGS[activeProgram];
+  const programConfig: ProgramConfig = allPrograms[activeProgram] || PROGRAM_CONFIGS.magang;
+  const currentProfile: UserProfile = profiles[activeProgram] || {
+    id: user?.id || 'user',
+    email: user?.email || '',
+    fullName: user?.user_metadata?.full_name || user?.user_metadata?.name || 'Pengguna',
+    nim: '',
+    avatarUrl: user?.user_metadata?.avatar_url || user?.user_metadata?.picture || '',
+    programType: activeProgram,
+    programTitle: `Logbook ${programConfig.label}`,
+    institution: '',
+    partnerName: '',
+    supervisorName: '',
+    supervisorContact: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
+    targetHours: programConfig.suggestedTargetHours || 300,
+    role: isAdmin ? 'admin' : 'user',
+    tier: isAdmin ? 'pro' : 'free'
+  };
 
   const userTier: UserTier = isAdmin ? 'pro' : (currentProfile.tier || 'free');
   const isPro = userTier === 'pro';
@@ -550,6 +830,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     <LogbookContext.Provider
       value={{
         activeProgram,
+        programs: allPrograms,
         profile: currentProfile,
         entries: currentEntries,
         allEntries,
@@ -565,6 +846,8 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         canAddEntry,
         upgradeToPro,
         switchProgram,
+        addCustomProgram,
+        deleteCustomProgram,
         updateProfile,
         addEntry,
         updateEntry,

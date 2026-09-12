@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLogbook } from '@/context/LogbookContext';
-import { PROGRAM_CONFIGS, ProgramType } from '@/types/logbook';
+import { ProgramType } from '@/types/logbook';
+import AddProgramModal from '@/components/AddProgramModal';
 import { 
   ArrowLeft, 
   Save, 
@@ -13,18 +14,28 @@ import {
   Building2, 
   Calendar, 
   Clock, 
-  Cloud, 
-  Key, 
   CheckCircle2,
-  HelpCircle,
-  ExternalLink
+  Crown,
+  Plus,
+  Trash2,
+  Sparkles
 } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { profile, updateProfile, activeProgram, switchProgram, isCloudConnected, programConfig } = useLogbook();
+  const { 
+    profile, 
+    updateProfile, 
+    activeProgram, 
+    switchProgram, 
+    programConfig, 
+    programs, 
+    deleteCustomProgram, 
+    isAdmin 
+  } = useLogbook();
 
   const [formData, setFormData] = useState(profile);
   const [isSaved, setIsSaved] = useState(false);
+  const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
 
   useEffect(() => {
     setFormData(profile);
@@ -73,45 +84,88 @@ export default function SettingsPage() {
 
         {/* 1. Pemilihan Jenis Program */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-blue-500" />
-            <span>Pilih Jenis Program Aktif</span>
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-            Struktur form, kategori aktivitas, dan label pembimbing akan otomatis menyesuaikan dengan program yang Anda pilih.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-blue-500" />
+                <span>Pilih Jenis Program Aktif</span>
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Struktur form, kategori aktivitas, dan label pembimbing akan otomatis menyesuaikan.
+              </p>
+            </div>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => setIsAddProgramOpen(true)}
+                className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700/60 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-500" />
+                <span>+ Tambah Program Baru</span>
+              </button>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {(Object.keys(PROGRAM_CONFIGS) as ProgramType[]).map((key) => {
-              const item = PROGRAM_CONFIGS[key];
+            {Object.keys(programs).map((key) => {
+              const item = programs[key];
+              if (!item) return null;
               const isSelected = activeProgram === key;
               return (
-                <button
-                  type="button"
+                <div
                   key={key}
                   onClick={() => handleProgramSelect(key)}
-                  className={`text-left p-4 rounded-2xl border transition-all ${
+                  className={`group relative text-left p-4 rounded-2xl border transition-all cursor-pointer ${
                     isSelected
                       ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-blue-500/20'
                       : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-sm text-slate-900 dark:text-white">
-                      {item.label}
-                    </span>
-                    {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
-                    )}
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        {item.label}
+                      </span>
+                      {item.isCustom && (
+                        <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                          Kustom
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0 ml-2">
+                      {isSelected && (
+                        <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400" />
+                      )}
+                      {isAdmin && item.isCustom && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm(`Yakin ingin menghapus program "${item.label}"?`)) {
+                              deleteCustomProgram(key);
+                            }
+                          }}
+                          className="opacity-60 hover:opacity-100 p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition-all"
+                          title="Hapus Program Kustom"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
                     {item.description}
                   </p>
-                  <div className="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400">
-                    <Clock className="w-3 h-3" />
-                    <span>Target: {item.suggestedTargetHours} Jam</span>
+                  <div className="mt-3 flex items-center justify-between text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>Target: {item.suggestedTargetHours} Jam</span>
+                    </span>
+                    <span className="text-slate-400 font-normal">
+                      {item.defaultCategories?.length || 0} Kategori
+                    </span>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -292,37 +346,13 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* 3. Status Koneksi Supabase & Panduan Vercel */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Cloud className="w-4 h-4 text-blue-500" />
-              <span>Status Integrasi Backend & Database</span>
-            </h2>
-            <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-              isCloudConnected 
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400' 
-                : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400'
-            }`}>
-              {isCloudConnected ? 'Supabase Terhubung' : 'Local Storage Demo Mode'}
-            </span>
-          </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-            Saat ini aplikasi menyimpan data langsung di browser Anda secara instan. Untuk mengaktifkan sinkronisasi cloud multi-perangkat dan login Google asli saat di-deploy ke Vercel, cukup tambahkan 2 environment variable di dashboard Vercel Anda:
-          </p>
 
-          <div className="p-3.5 rounded-2xl bg-slate-900 text-slate-200 font-mono text-xs space-y-1 overflow-x-auto">
-            <p className="text-slate-400"># Masukkan di Vercel: Project Settings -&gt; Environment Variables</p>
-            <p><span className="text-cyan-400">NEXT_PUBLIC_SUPABASE_URL</span>=https://your-project.supabase.co</p>
-            <p><span className="text-cyan-400">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</p>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Skema SQL siap pakai tersedia di file <code className="text-blue-500 font-semibold">supabase_schema.sql</code></span>
-          </div>
-        </div>
-
+        {/* Modal Tambah Program untuk Super User */}
+        <AddProgramModal
+          isOpen={isAddProgramOpen}
+          onClose={() => setIsAddProgramOpen(false)}
+        />
       </div>
     </div>
   );

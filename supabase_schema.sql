@@ -114,3 +114,37 @@ WITH CHECK (bucket_id = 'logbook-docs');
 CREATE POLICY "Anyone can view photos"
 ON storage.objects FOR SELECT TO public
 USING (bucket_id = 'logbook-docs');
+
+-- 7. Tabel Program Kustom (Dibuat oleh Super User)
+CREATE TABLE IF NOT EXISTS public.custom_programs (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  badge_color TEXT DEFAULT 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
+  supervisor_label TEXT DEFAULT 'Pembimbing / Mentor',
+  partner_label TEXT DEFAULT 'Instansi / Mitra',
+  default_categories JSONB DEFAULT '["Aktivitas Utama", "Diskusi", "Laporan"]'::jsonb,
+  suggested_target_hours NUMERIC DEFAULT 300,
+  description TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.custom_programs ENABLE ROW LEVEL SECURITY;
+
+-- Siapa saja bisa melihat daftar program kustom
+CREATE POLICY "Anyone can view custom programs"
+  ON public.custom_programs FOR SELECT
+  USING (true);
+
+-- Hanya Super Admin yang bisa menambah, mengedit, atau menghapus program kustom
+CREATE POLICY "Super Admin can insert custom programs"
+  ON public.custom_programs FOR INSERT
+  WITH CHECK (auth.jwt() ->> 'email' = 'naufalfaster@gmail.com');
+
+CREATE POLICY "Super Admin can update custom programs"
+  ON public.custom_programs FOR UPDATE
+  USING (auth.jwt() ->> 'email' = 'naufalfaster@gmail.com');
+
+CREATE POLICY "Super Admin can delete custom programs"
+  ON public.custom_programs FOR DELETE
+  USING (auth.jwt() ->> 'email' = 'naufalfaster@gmail.com');
+

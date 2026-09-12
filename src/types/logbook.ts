@@ -1,7 +1,8 @@
-export type ProgramType = 'magang' | 'kkn' | 'pkl' | 'skripsi' | 'mandiri';
+export type DefaultProgramType = 'magang' | 'kkn' | 'pkl' | 'skripsi' | 'mandiri';
+export type ProgramType = DefaultProgramType | string;
 
 export interface ProgramConfig {
-  id: ProgramType;
+  id: string;
   label: string;
   badgeColor: string;
   supervisorLabel: string; // e.g. "Mentor Lapangan", "Dosen Pembimbing Lapangan", "Dosen Pembimbing"
@@ -9,6 +10,7 @@ export interface ProgramConfig {
   defaultCategories: string[];
   suggestedTargetHours: number;
   description: string;
+  isCustom?: boolean;
 }
 
 export const PROGRAM_CONFIGS: Record<ProgramType, ProgramConfig> = {

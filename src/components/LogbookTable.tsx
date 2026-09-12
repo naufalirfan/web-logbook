@@ -43,7 +43,7 @@ export default function LogbookTable() {
 
   // Available categories based on current entries + config defaults
   const categories = useMemo(() => {
-    const set = new Set<string>(programConfig.defaultCategories);
+    const set = new Set<string>(programConfig?.defaultCategories || []);
     entries.forEach(e => set.add(e.category));
     return Array.from(set);
   }, [entries, programConfig]);

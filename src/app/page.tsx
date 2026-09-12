@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLogbook } from '@/context/LogbookContext';
 import StatsCards from '@/components/StatsCards';
 import LogbookTable from '@/components/LogbookTable';
-import { PROGRAM_CONFIGS, ProgramType } from '@/types/logbook';
+import AddProgramModal from '@/components/AddProgramModal';
 import { 
   Plus, 
   FileText, 
@@ -15,11 +15,13 @@ import {
   Layers,
   CheckCircle,
   HelpCircle,
-  Clock
+  Clock,
+  Crown
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { profile, activeProgram, switchProgram, programConfig } = useLogbook();
+  const { profile, activeProgram, switchProgram, programConfig, programs, isAdmin } = useLogbook();
+  const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
 
   const todayFormatted = new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -87,8 +89,9 @@ export default function DashboardPage() {
         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap mr-2">
           Mode Program:
         </span>
-        {(Object.keys(PROGRAM_CONFIGS) as ProgramType[]).map((key) => {
-          const item = PROGRAM_CONFIGS[key];
+        {Object.keys(programs).map((key) => {
+          const item = programs[key];
+          if (!item) return null;
           const isSelected = activeProgram === key;
           return (
             <button
@@ -104,6 +107,19 @@ export default function DashboardPage() {
             </button>
           );
         })}
+
+        {/* Tombol Tambah Program Super User */}
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => setIsAddProgramOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700/60 transition-all hover:scale-105 active:scale-95 shadow-sm"
+            title="Tambah Program Kustom Baru (Super User)"
+          >
+            <Crown className="w-3.5 h-3.5 text-amber-500" />
+            <span>+ Tambah Program</span>
+          </button>
+        )}
       </div>
 
       {/* 3. Stats Overview Cards */}
@@ -125,6 +141,11 @@ export default function DashboardPage() {
         <LogbookTable />
       </div>
 
+      {/* Super User Add Program Modal */}
+      <AddProgramModal
+        isOpen={isAddProgramOpen}
+        onClose={() => setIsAddProgramOpen(false)}
+      />
     </div>
   );
 }

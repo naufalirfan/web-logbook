@@ -24,11 +24,13 @@ import {
   Moon
 } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
+import AddProgramModal from '@/components/AddProgramModal';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { 
     activeProgram, 
+    programs,
     switchProgram, 
     programConfig, 
     user, 
@@ -43,6 +45,7 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -132,8 +135,9 @@ export default function Navbar() {
                       <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                         Pilih Mode Program
                       </div>
-                      {(Object.keys(PROGRAM_CONFIGS) as ProgramType[]).map((key) => {
-                        const item = PROGRAM_CONFIGS[key];
+                      {Object.keys(programs).map((key) => {
+                        const item = programs[key];
+                        if (!item) return null;
                         const isActive = activeProgram === key;
                         return (
                           <button
@@ -148,11 +152,26 @@ export default function Navbar() {
                                 : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
                             }`}
                           >
-                            <span>{item.label}</span>
-                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />}
+                            <span className="truncate">{item.label}</span>
+                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0 ml-2" />}
                           </button>
                         );
                       })}
+
+                      {/* Tombol Tambah Program Khusus Super User */}
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsProgramDropdownOpen(false);
+                            setIsAddProgramOpen(true);
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl transition-colors mt-1 border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <Crown className="w-3.5 h-3.5 text-amber-500" />
+                          <span>+ Tambah Program Baru</span>
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
@@ -397,6 +416,12 @@ export default function Navbar() {
       <UpgradeModal
         isOpen={isUpgradeOpen}
         onClose={() => setIsUpgradeOpen(false)}
+      />
+
+      {/* Super User Add Program Modal */}
+      <AddProgramModal
+        isOpen={isAddProgramOpen}
+        onClose={() => setIsAddProgramOpen(false)}
       />
     </header>
   );
