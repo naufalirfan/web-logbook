@@ -6,6 +6,7 @@ import { useLogbook } from '@/context/LogbookContext';
 import { LogEntry } from '@/types/logbook';
 import ImageModal from '@/components/ImageModal';
 import EditLogbookModal from '@/components/EditLogbookModal';
+import TransferModal from '@/components/TransferModal';
 import { 
   Search, 
   Filter, 
@@ -23,13 +24,15 @@ import {
   Pencil,
   RotateCcw,
   Cloud,
-  RefreshCw
+  RefreshCw,
+  ArrowLeftRight
 } from 'lucide-react';
 
 export default function LogbookTable() {
   const { entries, deleteEntry, updateEntry, reviewEntry, restoreDefaultEntries, syncWithCloud, programConfig, isAdmin } = useLogbook();
   
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -243,6 +246,16 @@ export default function LogbookTable() {
               <Cloud className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#60a5fa]" />
             )}
             <span>{isSyncing ? 'Menyinkron...' : 'Sinkron Cloud'}</span>
+          </button>
+
+          {/* Transfer PC <-> Mobile Button */}
+          <button
+            onClick={() => setIsTransferOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-[#c8c4be] dark:border-[#3e3e3e] bg-[#fdf2f8] dark:bg-[#831843]/20 text-[#be185d] dark:text-[#f472b6] hover:bg-[#fce7f3] dark:hover:bg-[#831843]/30 transition-colors shadow-xs"
+            title="Salin & pindahkan seluruh data logbook dari PC ke HP Android langsung"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5 text-[#be185d] dark:text-[#f472b6]" />
+            <span>Transfer PC ↔ HP</span>
           </button>
 
           {/* New Entry Button */}
@@ -488,6 +501,12 @@ export default function LogbookTable() {
         isOpen={Boolean(editingEntry)}
         entry={editingEntry}
         onClose={() => setEditingEntry(null)}
+      />
+
+      {/* Transfer PC <-> Mobile Modal */}
+      <TransferModal
+        isOpen={isTransferOpen}
+        onClose={() => setIsTransferOpen(false)}
       />
 
     </div>
