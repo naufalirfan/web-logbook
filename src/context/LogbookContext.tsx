@@ -73,6 +73,39 @@ const STORAGE_KEYS = {
   CUSTOM_PROGRAMS: 'logbook_custom_programs',
 };
 
+// Helper: Ensure any string (Google numeric sub ID, username, demo ID) is a valid RFC 4122 UUID for Postgres
+export const toValidUuid = (input?: string | null): string => {
+  if (!input) return '00000000-0000-4000-a000-000000000000';
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(input)) {
+    return input.toLowerCase();
+  }
+
+  let h1 = 0x811c9dc5;
+  let h2 = 0x6c62272e;
+  let h3 = 0x9e3779b9;
+  let h4 = 0x27d4eb2f;
+
+  for (let i = 0; i < input.length; i++) {
+    const ch = input.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 0x01000193);
+    h2 = Math.imul(h2 ^ ch, 0x01000193);
+    h3 = Math.imul(h3 ^ ch, 0x01000193);
+    h4 = Math.imul(h4 ^ ch, 0x01000193);
+  }
+
+  const toHex = (n: number) => (n >>> 0).toString(16).padStart(8, '0');
+  const hex = toHex(h1) + toHex(h2) + toHex(h3) + toHex(h4);
+
+  return [
+    hex.substring(0, 8),
+    hex.substring(8, 12),
+    '4' + hex.substring(13, 16),
+    'a' + hex.substring(17, 20),
+    hex.substring(20, 32)
+  ].join('-').toLowerCase();
+};
+
 // User-scoped LocalStorage Key Helpers
 const getUserStorageKey = (prefix: string, currentUser: User | null): string => {
   if (!currentUser) return `${prefix}_guest`;
@@ -162,19 +195,20 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
   // Fetch Cloud data for this specific user if Supabase is connected
   const fetchCloudData = useCallback(async (userId: string) => {
     if (!supabase) return;
+    const safeUserId = toValidUuid(userId);
     try {
       // 1. Fetch user's profile
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('id', safeUserId)
         .single();
 
       if (profileData) {
         const isSuper = isUserAdmin(profileData.email);
         const resolvedNim = (profileData.nim === '2313451001' || !profileData.nim) && isSuper ? '2412401021' : (profileData.nim || '');
         if (isSuper && profileData.nim !== '2412401021') {
-          supabase.from('profiles').update({ nim: '2412401021' }).eq('id', userId).then(() => {});
+          supabase.from('profiles').update({ nim: '2412401021' }).eq('id', safeUserId).then(() => {});
         }
         setProfiles(prev => ({
           ...prev,
@@ -203,7 +237,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       const { data: entriesData } = await supabase
         .from('log_entries')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', safeUserId)
         .order('date', { ascending: false });
 
       if (entriesData && entriesData.length > 0) {
@@ -600,8 +634,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (isSupabaseConfigured && supabase && user) {
+      const safeUserId = toValidUuid(user.id);
       supabase.from('profiles').upsert({
-        id: user.id,
+        id: safeUserId,
         program_type: activeProgram,
         full_name: updated.fullName,
         nim: updated.nim,
@@ -648,8 +683,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }));
 
     if (isSupabaseConfigured && supabase && user) {
+      const safeUserId = toValidUuid(user.id);
       const { data, error } = await supabase.from('log_entries').insert({
-        user_id: user.id,
+        user_id: safeUserId,
         program_type: activeProgram,
         date: newEntry.date,
         start_time: newEntry.startTime,
@@ -831,15 +867,22 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       return { success: false, uploaded: 0, downloaded: 0, message: 'Supabase belum terkonfigurasi atau akun belum login.' };
     }
 
+    const safeUserId = toValidUuid(user.id);
+
     try {
       // 1. Fetch current cloud entries for this user
       const { data: cloudEntries, error: fetchErr } = await supabase
         .from('log_entries')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', safeUserId);
 
       if (fetchErr) {
-        return { success: false, uploaded: 0, downloaded: 0, message: fetchErr.message };
+        return { 
+          success: false, 
+          uploaded: 0, 
+          downloaded: 0, 
+          message: 'Sinkronisasi cloud memerlukan izin database. Silakan gunakan tombol "Transfer PC ↔ HP" untuk memindahkan catatan Anda secara instan dan aman.' 
+        };
       }
 
       const cloudMap = new Map<string, unknown>();
@@ -869,7 +912,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         list.forEach(entry => {
           if (!cloudMap.has(entry.id)) {
             entriesToUpload.push({
-              user_id: user.id,
+              user_id: safeUserId,
               program_type: progKey,
               date: entry.date,
               start_time: entry.startTime,
@@ -894,6 +937,12 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
           uploadedCount = entriesToUpload.length;
         } else {
           console.warn('Supabase insert note during sync:', insertErr);
+          return { 
+            success: false, 
+            uploaded: 0, 
+            downloaded: 0, 
+            message: 'Akses tulis database cloud dibatasi. Silakan gunakan tombol "Transfer PC ↔ HP" untuk memindahkan catatan Anda ke HP dengan aman.' 
+          };
         }
       }
 
@@ -901,7 +950,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       const { data: refreshedCloud } = await supabase
         .from('log_entries')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', safeUserId)
         .order('date', { ascending: false });
 
       let downloadedCount = 0;
