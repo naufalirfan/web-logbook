@@ -20,11 +20,12 @@ import {
   Crown,
   CheckCheck,
   Send,
-  Pencil
+  Pencil,
+  RotateCcw
 } from 'lucide-react';
 
 export default function LogbookTable() {
-  const { entries, deleteEntry, updateEntry, reviewEntry, programConfig, isAdmin } = useLogbook();
+  const { entries, deleteEntry, updateEntry, reviewEntry, restoreDefaultEntries, programConfig, isAdmin } = useLogbook();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -207,6 +208,20 @@ export default function LogbookTable() {
             <span>{sortOrder === 'desc' ? 'Terbaru' : 'Terlama'}</span>
           </button>
 
+          {/* Restore Default Entries Button */}
+          <button
+            onClick={() => {
+              if (window.confirm('Pulihkan data contoh logbook bawaan klinik dan akademik?')) {
+                restoreDefaultEntries();
+              }
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-[#e5e3df] dark:border-[#383838] bg-[#f7f6f3] dark:bg-[#262626] text-[#37352f] dark:text-[#e3e2e0] hover:bg-[#ede9e4] dark:hover:bg-[#303030] transition-colors"
+            title="Pulihkan Data Contoh / Bawaan"
+          >
+            <RotateCcw className="w-3 h-3 text-[#5645d4] dark:text-[#a78bfa]" />
+            <span className="hidden sm:inline">Pulihkan Contoh</span>
+          </button>
+
           {/* New Entry Button */}
           <Link
             href="/new"
@@ -233,13 +248,22 @@ export default function LogbookTable() {
               ? 'Tidak ada log kegiatan yang cocok dengan filter pencarian.'
               : `Mulai isi logbook harian untuk program ${programConfig.label}.`}
           </p>
-          <Link
-            href="/new"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold bg-[#5645d4] hover:bg-[#4534b3] text-white shadow-sm transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Tulis Entri Pertama</span>
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              onClick={() => restoreDefaultEntries()}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold border border-[#5645d4] text-[#5645d4] dark:text-[#a78bfa] dark:border-[#a78bfa] hover:bg-[#5645d4]/10 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Pulihkan Data Contoh Logbook</span>
+            </button>
+            <Link
+              href="/new"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold bg-[#5645d4] hover:bg-[#4534b3] text-white shadow-sm transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Tulis Entri Pertama</span>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="space-y-2.5">

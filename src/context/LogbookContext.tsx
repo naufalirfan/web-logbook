@@ -42,6 +42,7 @@ interface LogbookContextType {
   updateEntry: (id: string, updated: Partial<LogEntry>) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
   reviewEntry: (id: string, status: 'approved' | 'submitted' | 'draft', feedback?: string) => Promise<void>;
+  restoreDefaultEntries: (programOnly?: boolean) => void;
   signInWithGoogle: () => Promise<void>;
   loginWithGoogleCredential: (token: string) => boolean;
   googleClientId: string;
@@ -202,7 +203,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
-      if (entriesData) {
+      if (entriesData && entriesData.length > 0) {
         const grouped: Record<string, LogEntry[]> = {};
         entriesData.forEach(row => {
           const type = row.program_type;
@@ -227,7 +228,10 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
           });
         });
 
-        setAllEntries(grouped);
+        setAllEntries(prev => ({
+          ...prev,
+          ...grouped
+        }));
       }
 
       // 3. Fetch custom programs from Supabase if table exists
@@ -267,6 +271,12 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Helper to check if entries object has actual log items
+  const hasAnyEntries = (obj: unknown): boolean => {
+    if (!obj || typeof obj !== 'object') return false;
+    return Object.values(obj as Record<string, unknown>).some(arr => Array.isArray(arr) && arr.length > 0);
+  };
+
   // Helper to load user-scoped data from LocalStorage
   const loadScopedUserData = useCallback((targetUser: User | null, currentCustoms: Record<string, ProgramConfig>) => {
     if (typeof window === 'undefined') return;
@@ -280,17 +290,36 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         const savedEntries = localStorage.getItem(entriesKey);
         if (savedEntries) {
           try {
-            setAllEntries(JSON.parse(savedEntries));
+            const parsed = JSON.parse(savedEntries);
+            if (hasAnyEntries(parsed)) {
+              setAllEntries(parsed);
+            } else if (isUserAdmin(targetUser.email)) {
+              // Super Admin should default to rich sample entries if wiped
+              setAllEntries(DEFAULT_ENTRIES);
+            } else {
+              setAllEntries(parsed);
+            }
           } catch {
-            setAllEntries({});
+            setAllEntries(isUserAdmin(targetUser.email) ? DEFAULT_ENTRIES : {});
           }
         } else {
-          // A newly logged in user starts with clean empty entries (1 user 1 logbook)
-          // Exception: Super Admin defaults to RSGM demo entries if brand new
-          if (isUserAdmin(targetUser.email)) {
-            setAllEntries(DEFAULT_ENTRIES);
+          // Check legacy un-scoped key
+          const legacy = localStorage.getItem('logbook_entries');
+          if (legacy) {
+            try {
+              const legacyParsed = JSON.parse(legacy);
+              if (hasAnyEntries(legacyParsed)) {
+                setAllEntries(legacyParsed);
+                localStorage.setItem(entriesKey, JSON.stringify(legacyParsed));
+              } else {
+                setAllEntries(DEFAULT_ENTRIES);
+              }
+            } catch {
+              setAllEntries(DEFAULT_ENTRIES);
+            }
           } else {
-            setAllEntries({});
+            // Default to rich entries so user has immediate logbook records
+            setAllEntries(DEFAULT_ENTRIES);
           }
         }
 
@@ -309,12 +338,31 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         const savedEntries = localStorage.getItem(entriesKey);
         if (savedEntries) {
           try {
-            setAllEntries(JSON.parse(savedEntries));
+            const parsed = JSON.parse(savedEntries);
+            if (hasAnyEntries(parsed)) {
+              setAllEntries(parsed);
+            } else {
+              setAllEntries(DEFAULT_ENTRIES);
+            }
           } catch {
             setAllEntries(DEFAULT_ENTRIES);
           }
         } else {
-          setAllEntries(DEFAULT_ENTRIES);
+          const legacy = localStorage.getItem('logbook_entries');
+          if (legacy) {
+            try {
+              const legacyParsed = JSON.parse(legacy);
+              if (hasAnyEntries(legacyParsed)) {
+                setAllEntries(legacyParsed);
+              } else {
+                setAllEntries(DEFAULT_ENTRIES);
+              }
+            } catch {
+              setAllEntries(DEFAULT_ENTRIES);
+            }
+          } else {
+            setAllEntries(DEFAULT_ENTRIES);
+          }
         }
 
         const savedProfiles = localStorage.getItem(profilesKey);
@@ -691,6 +739,29 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProgram, user]);
 
+  const restoreDefaultEntries = useCallback((programOnly: boolean = false) => {
+    setAllEntries(prev => {
+      let next: Record<string, LogEntry[]>;
+      if (programOnly && DEFAULT_ENTRIES[activeProgram]) {
+        next = {
+          ...prev,
+          [activeProgram]: DEFAULT_ENTRIES[activeProgram]
+        };
+      } else {
+        next = {
+          ...prev,
+          ...DEFAULT_ENTRIES
+        };
+      }
+      if (typeof window !== 'undefined') {
+        const entriesKey = getUserStorageKey('logbook_entries', user);
+        localStorage.setItem(entriesKey, JSON.stringify(next));
+        localStorage.setItem('logbook_entries', JSON.stringify(next));
+      }
+      return next;
+    });
+  }, [activeProgram, user]);
+
   const signInWithGoogle = useCallback(async () => {
     if (isSupabaseConfigured && supabase) {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
@@ -853,6 +924,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         updateEntry,
         deleteEntry,
         reviewEntry,
+        restoreDefaultEntries,
         signInWithGoogle,
         loginWithGoogleCredential,
         googleClientId,

@@ -128,8 +128,63 @@ export const DEFAULT_ENTRIES: Record<string, LogEntry[]> = {
       title: 'Deflasking, Trimming, dan High-Shine Polishing GTL Rahang Bawah',
       description: 'Membuka kuvet pasca-curing akrilik panas (heat-cured), pembersihan sisa plaster dengan ultrasonic bath, trimming flash akrilik menggunakan tungsten carbide bur, dan pemolesan bertahap dengan pumice serta chalk putih (high-shine).',
       achievements: 'Permukaan plat mengkilap sempurna, tepi plat membulat halus tanpa mengurangi retensi border seal.',
-      status: 'draft',
+      status: 'approved',
+      supervisorFeedback: 'Tepian plat halus dan bebas porusitas. Pertahankan kerapian ini.',
       createdAt: '2026-09-12T14:35:00Z'
+    },
+    {
+      id: 'entry-m4',
+      date: '2026-09-14',
+      startTime: '08:00',
+      endTime: '15:30',
+      durationHours: 7.5,
+      category: 'Pengecoran Logam (Casting) & Sandblasting',
+      title: 'Pengecoran Logam Paduan Ni-Cr & Sandblasting Coping Jembatan',
+      description: 'Proses burnout bumbung tuang pada furnace temperatur 950°C, pengecoran logam menggunakan casting machine sentrifugal, devestasi, serta sandblasting dengan partikel aluminium oksida 50 mikron.',
+      achievements: 'Coping logam tercor utuh tanpa cacat nodul atau porositas internal, pas adaptasi pada abutment model.',
+      status: 'approved',
+      supervisorFeedback: 'Hasil casting padat dan rapi. Siap untuk tahap aplikasi keramik porselen.',
+      createdAt: '2026-09-14T15:45:00Z'
+    },
+    {
+      id: 'entry-m5',
+      date: '2026-09-15',
+      startTime: '08:00',
+      endTime: '16:00',
+      durationHours: 8.0,
+      category: 'Bimbingan Kasus & Evaluasi Dosen',
+      title: 'Asistensi Try-In Pasien Klinis Gigi Tiruan Sebagian Lepasan',
+      description: 'Mendampingi dokter gigi pembimbing klinik saat try-in malam pada pasien, evaluasi estetika garis senyum, fonetik pelafalan huruf S dan F, serta verifikasi relasi sentrik rahang atas dan bawah.',
+      achievements: 'Pasien merasa nyaman dengan kontak oklusi, tidak ada keluhan rasa sakit pada gingiva.',
+      status: 'approved',
+      supervisorFeedback: 'Pemahaman anatomi oklusal sangat baik saat evaluasi klinis.',
+      createdAt: '2026-09-15T16:10:00Z'
+    },
+    {
+      id: 'entry-m6',
+      date: '2026-09-16',
+      startTime: '08:30',
+      endTime: '14:30',
+      durationHours: 6.0,
+      category: 'Gigi Tiruan Lepasan Akrilik',
+      title: 'Reparasi Sayap Plat Akrilik Patah & Penggantian Cangkolan Kawat',
+      description: 'Penyambungan kembali patahan plat akrilik menggunakan self-cured acrylic (cold cure), pembuatan bevel dovetail mekanik, dan penanaman kawat stainless steel round 0.7 mm baru pada gigi penyangga.',
+      achievements: 'Kekuatan sambungan plat kokoh dan garis patahan terpoles rata tanpa perbedaan warna mencolok.',
+      status: 'submitted',
+      createdAt: '2026-09-16T14:40:00Z'
+    },
+    {
+      id: 'entry-m7',
+      date: '2026-09-17',
+      startTime: '08:00',
+      endTime: '13:30',
+      durationHours: 5.5,
+      category: 'Sterilisasi & Manajemen Model Kerja',
+      title: 'Manajemen Cetakan Alginat Pasien Baru & Sterilisasi Instrumen Lab',
+      description: 'Desinfeksi cetakan alginat dengan larutan klorin 0.5%, pengecoran plaster tipe IV (dental stone keras), pembuatan basis model kerja dengan rubber mold, serta sterilisasi autoclave instrumen.',
+      achievements: '8 pasang model studi tercor bebas gelembung udara dan tersimpan rapi pada rak pasien.',
+      status: 'draft',
+      createdAt: '2026-09-17T13:45:00Z'
     }
   ],
   kkn: [
@@ -160,6 +215,47 @@ export const DEFAULT_ENTRIES: Record<string, LogEntry[]> = {
       achievements: 'Plang terpasang kokoh dan area irigasi bersih dari sampah plastik.',
       status: 'approved',
       createdAt: '2026-08-16T16:00:00Z'
+    },
+    {
+      id: 'entry-k3',
+      date: '2026-08-18',
+      startTime: '08:00',
+      endTime: '14:00',
+      durationHours: 6.0,
+      category: 'Sosialisasi & Edukasi Warga',
+      title: 'Pemeriksaan Kesehatan Gratis & Sosialisasi PHBS di Balai Posyandu',
+      description: 'Pemeriksaan tensi darah, gula darah sewaktu untuk 45 lansia dusun, dan penyuluhan pola hidup bersih dan sehat bersama kader puskesmas.',
+      achievements: 'Seluruh warga lansia terdata riwayat kesehatannya dan mendapatkan kartu kontrol posyandu.',
+      status: 'approved',
+      supervisorFeedback: 'Kerja sama yang baik dengan tim puskesmas setempat.',
+      createdAt: '2026-08-18T14:15:00Z'
+    },
+    {
+      id: 'entry-k4',
+      date: '2026-08-20',
+      startTime: '13:00',
+      endTime: '18:30',
+      durationHours: 5.5,
+      category: 'Pelaksanaan Program Kerja',
+      title: 'Bimbingan Belajar Matematika & Bahasa Inggris Anak Dusun',
+      description: 'Membuka kelas belajar sore gratis untuk 30 anak usia SD di posko KKN dengan metode permainan edukatif dan kuis interaktif.',
+      achievements: 'Anak-anak antusias mengikuti materi perkalian dasar dan kosakata percakapan harian.',
+      status: 'approved',
+      createdAt: '2026-08-20T18:40:00Z'
+    },
+    {
+      id: 'entry-k5',
+      date: '2026-08-25',
+      startTime: '09:00',
+      endTime: '16:00',
+      durationHours: 7.0,
+      category: 'Penyusunan LPJ / Luaran',
+      title: 'Penyusunan LPJ Akhir & Penyerahan Arsip Dokumentasi Program',
+      description: 'Kompilasi laporan keuangan program kerja, pencetakan buku laporan akhir KKN, dan serah terima plakat cenderamata kepada Kepala Desa.',
+      achievements: 'LPJ disetujui DPL dan seluruh program kerja 100% terlaksana tuntas.',
+      status: 'approved',
+      supervisorFeedback: 'Selamat atas kelulusan program KKN dengan predikat sangat memuaskan.',
+      createdAt: '2026-08-25T16:30:00Z'
     }
   ],
   pkl: [
@@ -175,7 +271,61 @@ export const DEFAULT_ENTRIES: Record<string, LogEntry[]> = {
       achievements: 'Semua kabel tersambung dengan kecepatan gigabit 1000 Mbps tanpa packet loss.',
       status: 'approved',
       imageUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&auto=format&fit=crop&q=80',
+      supervisorFeedback: 'Pekerjaan crimping rapi dan penataan rak server memenuhi standar teknis.',
       createdAt: '2026-07-10T16:15:00Z'
+    },
+    {
+      id: 'entry-p2',
+      date: '2026-07-12',
+      startTime: '08:00',
+      endTime: '15:00',
+      durationHours: 7.0,
+      category: 'Observasi Teknis',
+      title: 'Konfigurasi VLAN & Bandwidth Limiter pada Router MikroTik',
+      description: 'Memisahkan traffic data staf kantor dengan jaringan wifi tamu menggunakan VLAN ID 10 dan 20 pada router gateway utama dinas.',
+      achievements: 'Jaringan tamu tidak dapat mengakses subnet internal kantor, keamanan jaringan meningkat.',
+      status: 'approved',
+      createdAt: '2026-07-12T15:15:00Z'
+    },
+    {
+      id: 'entry-p3',
+      date: '2026-07-15',
+      startTime: '08:30',
+      endTime: '15:00',
+      durationHours: 6.5,
+      category: 'Praktik Lapangan',
+      title: 'Troubleshooting Jaringan & Setup Printer Sharing Divisi Keuangan',
+      description: 'Memperbaiki masalah IP conflict pada 3 unit komputer staf dan konfigurasi network printer sharing menggunakan print server.',
+      achievements: 'Semua workstation divisi keuangan kembali dapat mencetak dokumen tanpa kendala.',
+      status: 'approved',
+      createdAt: '2026-07-15T15:10:00Z'
+    },
+    {
+      id: 'entry-p4',
+      date: '2026-07-20',
+      startTime: '08:00',
+      endTime: '16:00',
+      durationHours: 8.0,
+      category: 'Pengolahan Data / Berkas',
+      title: 'Setup Backup Database Otomatis ke NAS Server',
+      description: 'Membuat script otomatis (cron job) untuk backup database sistem informasi berkas dinas setiap pukul 02:00 WIB ke server NAS lokal.',
+      achievements: 'Simulasi restore data dari backup berhasil 100% tanpa ada tabel yang korup.',
+      status: 'approved',
+      supervisorFeedback: 'Sangat solutif untuk mitigasi risiko kehilangan data dinas.',
+      createdAt: '2026-07-20T16:10:00Z'
+    },
+    {
+      id: 'entry-p5',
+      date: '2026-07-24',
+      startTime: '08:30',
+      endTime: '14:30',
+      durationHours: 6.0,
+      category: 'Penyusunan Modul / Laporan',
+      title: 'Penyusunan Laporan Akhir PKL & Panduan SOP Jaringan Dinas',
+      description: 'Menulis dokumen panduan teknis penanganan gangguan jaringan internet untuk staf IT dan kompilasi laporan PKL semester.',
+      achievements: 'Buku panduan diserahkan ke Kepala Seksi IT dan disetujui sebagai dokumen resmi.',
+      status: 'submitted',
+      createdAt: '2026-07-24T14:45:00Z'
     }
   ],
   skripsi: [
@@ -192,6 +342,60 @@ export const DEFAULT_ENTRIES: Record<string, LogEntry[]> = {
       status: 'approved',
       supervisorFeedback: 'Lanjutkan ke eksperimen Bab 4, perhatikan variasi metrik evaluasi Recall@K.',
       createdAt: '2026-04-12T15:30:00Z'
+    },
+    {
+      id: 'entry-s2',
+      date: '2026-04-20',
+      startTime: '09:00',
+      endTime: '15:30',
+      durationHours: 6.5,
+      category: 'Pengumpulan Data / Eksperimen',
+      title: 'Data Crawling & Text Preprocessing Dokumen Regulasi',
+      description: 'Ekstraksi 500 dokumen PDF undang-undang dan peraturan, pembersihan stopword, normalisasi teks, dan pembuatan chunking berbasis semantik.',
+      achievements: 'Dataset bersih berformat JSONL siap untuk proses embedding vektor.',
+      status: 'approved',
+      createdAt: '2026-04-20T15:40:00Z'
+    },
+    {
+      id: 'entry-s3',
+      date: '2026-05-05',
+      startTime: '08:30',
+      endTime: '16:30',
+      durationHours: 8.0,
+      category: 'Pengumpulan Data / Eksperimen',
+      title: 'Eksperimen Benchmarking Embedding Model & Vektor Database',
+      description: 'Pengujian performa model text-embedding-3-small vs open-source BGE pada database Supabase pgvector dengan 1.000 query uji.',
+      achievements: 'Ditemukan parameter optimal HNSW index dengan m=16 dan ef_construction=64.',
+      status: 'approved',
+      createdAt: '2026-05-05T16:45:00Z'
+    },
+    {
+      id: 'entry-s4',
+      date: '2026-05-18',
+      startTime: '10:00',
+      endTime: '15:30',
+      durationHours: 5.5,
+      category: 'Penulisan Bab 4-5',
+      title: 'Konsultasi Analisis Hasil Evaluasi Bab 4 (MRR & Recall@10)',
+      description: 'Penyajian grafik perbandingan accuracy antara metode RAG murni dengan Hybrid Search BM25 kepada dosen pembimbing.',
+      achievements: 'Dosen menyetujui analisis temuan dan memberikan masukan untuk memperjelas bab pembahasan.',
+      status: 'approved',
+      supervisorFeedback: 'Grafik sudah representatif. Segera susun draf naskah lengkap Bab 5.',
+      createdAt: '2026-05-18T15:45:00Z'
+    },
+    {
+      id: 'entry-s5',
+      date: '2026-06-02',
+      startTime: '09:00',
+      endTime: '15:00',
+      durationHours: 6.0,
+      category: 'Revisi & Persiapan Sidang',
+      title: 'Pemberkasan Naskah Lengkap Skripsi & Verifikasi Bebas Plagiasi',
+      description: 'Pengecekan turnitin mandiri (similarity index 11%), penyiapan slide presentasi sidang 15 menit, dan pengumpulan berkas tanda tangan DPL.',
+      achievements: 'Naskah skripsi dinyatakan layak dan dijadwalkan untuk sidang tugas akhir.',
+      status: 'approved',
+      supervisorFeedback: 'Selamat atas selesainya naskah. Kuasai materi untuk sesi tanya jawab penguji.',
+      createdAt: '2026-06-02T15:15:00Z'
     }
   ],
   mandiri: [
@@ -205,8 +409,48 @@ export const DEFAULT_ENTRIES: Record<string, LogEntry[]> = {
       title: 'Building Interactive Multi-Program Logbook UI',
       description: 'Membangun arsitektur frontend dengan Next.js App Router, Tailwind CSS, dark mode support, dan sistem fallback demo storage.',
       achievements: 'Komponen dashboard dan ekspor PDF selesai dibuat.',
-      status: 'submitted',
+      status: 'approved',
       createdAt: '2026-09-05T23:35:00Z'
+    },
+    {
+      id: 'entry-mn2',
+      date: '2026-09-08',
+      startTime: '18:30',
+      endTime: '23:30',
+      durationHours: 5.0,
+      category: 'Coding & Desain',
+      title: 'Integrasi Supabase PostgreSQL & Row Level Security (RLS)',
+      description: 'Konfigurasi skema database relasional, auth listener Google Identity Services, dan trigger database otomatis untuk profil user.',
+      achievements: 'Data entri otomatis tersinkronisasi dua arah ke cloud saat online.',
+      status: 'approved',
+      createdAt: '2026-09-08T23:35:00Z'
+    },
+    {
+      id: 'entry-mn3',
+      date: '2026-09-12',
+      startTime: '19:00',
+      endTime: '23:00',
+      durationHours: 4.0,
+      category: 'Coding & Desain',
+      title: 'Implementasi Ekspor Dokumen Resmi A4 & CSV Excel UTF-8 BOM',
+      description: 'Menyusun layout cetak laporan kegiatan dengan media query print, KOP surat resmi kampus, dan tanda tangan 3 kolom.',
+      achievements: 'Hasil ekspor dapat langsung dicetak rapi dan terbaca sempurna di Microsoft Excel.',
+      status: 'approved',
+      createdAt: '2026-09-12T23:15:00Z'
+    },
+    {
+      id: 'entry-mn4',
+      date: '2026-09-18',
+      startTime: '20:00',
+      endTime: '23:30',
+      durationHours: 3.5,
+      category: 'Review Progres',
+      title: 'Refactoring Antarmuka ke Notion Workspace Design System',
+      description: 'Mengganti komponen dan token warna menjadi Notion hairline borders, pastel multi-select tags, dan clean page header.',
+      achievements: 'Antarmuka terasa jauh lebih tenang, bersih, dan profesional.',
+      status: 'approved',
+      createdAt: '2026-09-18T23:40:00Z'
     }
   ]
 };
+
