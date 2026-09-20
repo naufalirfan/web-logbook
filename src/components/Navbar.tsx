@@ -252,7 +252,7 @@ export default function Navbar() {
                   alert(res.message || 'Sinkronisasi selesai.');
                 }}
                 disabled={isSyncing}
-                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors hover:opacity-80 active:scale-95 ${
+                className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors hover:opacity-80 active:scale-95 ${
                   isCloudConnected 
                     ? 'bg-[#d9f3e1] dark:bg-[#1aae39]/20 text-[#1aae39] dark:text-[#4ade80] border-[#c8c4be] dark:border-[#3e3e3e]' 
                     : 'bg-[#fef7d6] dark:bg-[#f5d75e]/20 text-[#8c6b00] dark:text-[#facc15] border-[#c8c4be] dark:border-[#3e3e3e]'

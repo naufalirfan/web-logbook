@@ -234,15 +234,15 @@ export default function LogbookTable() {
               alert(res.message || 'Sinkronisasi selesai.');
             }}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-[#e5e3df] dark:border-[#383838] bg-[#f7f6f3] dark:bg-[#262626] text-[#37352f] dark:text-[#e3e2e0] hover:bg-[#ede9e4] dark:hover:bg-[#303030] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-[#c8c4be] dark:border-[#3e3e3e] bg-[#f0f7ff] dark:bg-[#1e293b] text-[#0066cc] dark:text-[#60a5fa] hover:bg-[#e0efff] dark:hover:bg-[#334155] transition-colors shadow-xs"
             title="Sinkronkan catatan antara PC dan Android via Cloud"
           >
             {isSyncing ? (
-              <RefreshCw className="w-3 h-3 text-[#5645d4] dark:text-[#a78bfa] animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#60a5fa] animate-spin" />
             ) : (
-              <Cloud className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+              <Cloud className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#60a5fa]" />
             )}
-            <span className="hidden sm:inline">{isSyncing ? 'Menyinkron...' : 'Sinkron Cloud'}</span>
+            <span>{isSyncing ? 'Menyinkron...' : 'Sinkron Cloud'}</span>
           </button>
 
           {/* New Entry Button */}
