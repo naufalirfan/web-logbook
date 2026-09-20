@@ -43,8 +43,11 @@ interface LogbookContextType {
   deleteEntry: (id: string) => Promise<void>;
   reviewEntry: (id: string, status: 'approved' | 'submitted' | 'draft', feedback?: string) => Promise<void>;
   restoreDefaultEntries: (programOnly?: boolean) => void;
+  syncWithCloud: () => Promise<{ success: boolean; uploaded: number; downloaded: number; message?: string }>;
+  exportBackupJSON: () => string;
+  importBackupJSON: (jsonString: string) => boolean;
   signInWithGoogle: () => Promise<void>;
-  loginWithGoogleCredential: (token: string) => boolean;
+  loginWithGoogleCredential: (token: string) => boolean | Promise<boolean>;
   googleClientId: string;
   setGoogleClientId: (id: string) => void;
   signInAsAdmin: () => void;
@@ -782,11 +785,11 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Login using real Google Identity Services JWT credential
-  const loginWithGoogleCredential = useCallback((credentialToken: string): boolean => {
+  const loginWithGoogleCredential = useCallback(async (credentialToken: string): Promise<boolean> => {
     const payload = parseGoogleJwt(credentialToken);
     if (!payload || !payload.email) return false;
 
-    const realGoogleUser = {
+    let realGoogleUser = {
       id: payload.sub,
       email: payload.email,
       user_metadata: {
@@ -797,13 +800,198 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       }
     } as unknown as User;
 
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: credentialToken
+        });
+        if (authData?.user && !authError) {
+          realGoogleUser = authData.user;
+        } else if (authError) {
+          console.warn('Supabase signInWithIdToken info:', authError.message);
+        }
+      } catch (err) {
+        console.warn('Supabase auth note:', err);
+      }
+    }
+
     setUser(realGoogleUser);
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, JSON.stringify(realGoogleUser));
     }
     loadScopedUserData(realGoogleUser, customPrograms);
+    fetchCloudData(realGoogleUser.id);
     return true;
-  }, [customPrograms, loadScopedUserData]);
+  }, [customPrograms, loadScopedUserData, fetchCloudData]);
+
+  // Two-Way Sync between local device storage and Supabase Cloud
+  const syncWithCloud = useCallback(async (): Promise<{ success: boolean; uploaded: number; downloaded: number; message?: string }> => {
+    if (!isSupabaseConfigured || !supabase || !user) {
+      return { success: false, uploaded: 0, downloaded: 0, message: 'Supabase belum terkonfigurasi atau akun belum login.' };
+    }
+
+    try {
+      // 1. Fetch current cloud entries for this user
+      const { data: cloudEntries, error: fetchErr } = await supabase
+        .from('log_entries')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (fetchErr) {
+        return { success: false, uploaded: 0, downloaded: 0, message: fetchErr.message };
+      }
+
+      const cloudMap = new Map<string, unknown>();
+      (cloudEntries || []).forEach(ce => {
+        cloudMap.set(ce.id, ce);
+      });
+
+      // 2. Upload any local entry not yet in cloud
+      const entriesToUpload: Array<{
+        user_id: string;
+        program_type: string;
+        date: string;
+        start_time: string;
+        end_time: string;
+        duration_hours: number;
+        category: string;
+        title: string;
+        description: string;
+        achievements: string;
+        status: string;
+        image_url: string;
+        supervisor_feedback: string;
+      }> = [];
+
+      Object.keys(allEntries).forEach(progKey => {
+        const list = allEntries[progKey] || [];
+        list.forEach(entry => {
+          if (!cloudMap.has(entry.id)) {
+            entriesToUpload.push({
+              user_id: user.id,
+              program_type: progKey,
+              date: entry.date,
+              start_time: entry.startTime,
+              end_time: entry.endTime,
+              duration_hours: entry.durationHours,
+              category: entry.category,
+              title: entry.title,
+              description: entry.description,
+              achievements: entry.achievements || '',
+              status: entry.status,
+              image_url: entry.imageUrl || '',
+              supervisor_feedback: entry.supervisorFeedback || ''
+            });
+          }
+        });
+      });
+
+      let uploadedCount = 0;
+      if (entriesToUpload.length > 0) {
+        const { error: insertErr } = await supabase.from('log_entries').insert(entriesToUpload);
+        if (!insertErr) {
+          uploadedCount = entriesToUpload.length;
+        } else {
+          console.warn('Supabase insert note during sync:', insertErr);
+        }
+      }
+
+      // 3. Re-fetch all cloud entries to consolidate
+      const { data: refreshedCloud } = await supabase
+        .from('log_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+
+      let downloadedCount = 0;
+      if (refreshedCloud && refreshedCloud.length > 0) {
+        const grouped: Record<string, LogEntry[]> = {};
+        refreshedCloud.forEach(row => {
+          const type = row.program_type;
+          if (!grouped[type]) grouped[type] = [];
+          grouped[type].push({
+            id: row.id,
+            date: row.date,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            durationHours: Number(row.duration_hours),
+            category: row.category,
+            title: row.title,
+            description: row.description,
+            achievements: row.achievements,
+            status: row.status,
+            imageUrl: row.image_url,
+            supervisorFeedback: row.supervisor_feedback,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+          });
+        });
+
+        downloadedCount = refreshedCloud.length;
+
+        setAllEntries(prev => {
+          const merged = { ...prev };
+          Object.keys(grouped).forEach(k => {
+            const existingList = merged[k] || [];
+            const existingIds = new Set(existingList.map(e => e.id));
+            const newCloudItems = grouped[k].filter(ce => !existingIds.has(ce.id));
+            merged[k] = [...newCloudItems, ...existingList];
+          });
+          if (typeof window !== 'undefined') {
+            const entriesKey = getUserStorageKey('logbook_entries', user);
+            localStorage.setItem(entriesKey, JSON.stringify(merged));
+          }
+          return merged;
+        });
+      }
+
+      return { 
+        success: true, 
+        uploaded: uploadedCount, 
+        downloaded: downloadedCount,
+        message: `Sinkronisasi tuntas! ${uploadedCount} diunggah ke cloud, ${downloadedCount} diunduh.` 
+      };
+    } catch (err) {
+      console.error('Error during syncWithCloud:', err);
+      return { success: false, uploaded: 0, downloaded: 0, message: 'Gagal melakukan sinkronisasi cloud.' };
+    }
+  }, [allEntries, user]);
+
+  const exportBackupJSON = useCallback((): string => {
+    return JSON.stringify({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      activeProgram,
+      profiles,
+      allEntries
+    }, null, 2);
+  }, [activeProgram, profiles, allEntries]);
+
+  const importBackupJSON = useCallback((jsonString: string): boolean => {
+    try {
+      const data = JSON.parse(jsonString);
+      if (!data || !data.allEntries) return false;
+      setAllEntries(prev => ({
+        ...prev,
+        ...data.allEntries
+      }));
+      if (data.profiles) {
+        setProfiles(prev => ({
+          ...prev,
+          ...data.profiles
+        }));
+      }
+      if (typeof window !== 'undefined') {
+        const entriesKey = getUserStorageKey('logbook_entries', user);
+        localStorage.setItem(entriesKey, JSON.stringify(data.allEntries));
+        localStorage.setItem('logbook_entries', JSON.stringify(data.allEntries));
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }, [user]);
 
   // Quick helper to sign in directly as Admin: naufalfaster@gmail.com
   const signInAsAdmin = useCallback(() => {
@@ -925,6 +1113,9 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
         deleteEntry,
         reviewEntry,
         restoreDefaultEntries,
+        syncWithCloud,
+        exportBackupJSON,
+        importBackupJSON,
         signInWithGoogle,
         loginWithGoogleCredential,
         googleClientId,

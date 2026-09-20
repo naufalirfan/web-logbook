@@ -21,12 +21,15 @@ import {
   CheckCheck,
   Send,
   Pencil,
-  RotateCcw
+  RotateCcw,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 
 export default function LogbookTable() {
-  const { entries, deleteEntry, updateEntry, reviewEntry, restoreDefaultEntries, programConfig, isAdmin } = useLogbook();
+  const { entries, deleteEntry, updateEntry, reviewEntry, restoreDefaultEntries, syncWithCloud, programConfig, isAdmin } = useLogbook();
   
+  const [isSyncing, setIsSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -220,6 +223,26 @@ export default function LogbookTable() {
           >
             <RotateCcw className="w-3 h-3 text-[#5645d4] dark:text-[#a78bfa]" />
             <span className="hidden sm:inline">Pulihkan Contoh</span>
+          </button>
+
+          {/* Cloud Sync Button */}
+          <button
+            onClick={async () => {
+              setIsSyncing(true);
+              const res = await syncWithCloud();
+              setIsSyncing(false);
+              alert(res.message || 'Sinkronisasi selesai.');
+            }}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-[#e5e3df] dark:border-[#383838] bg-[#f7f6f3] dark:bg-[#262626] text-[#37352f] dark:text-[#e3e2e0] hover:bg-[#ede9e4] dark:hover:bg-[#303030] transition-colors"
+            title="Sinkronkan catatan antara PC dan Android via Cloud"
+          >
+            {isSyncing ? (
+              <RefreshCw className="w-3 h-3 text-[#5645d4] dark:text-[#a78bfa] animate-spin" />
+            ) : (
+              <Cloud className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+            )}
+            <span className="hidden sm:inline">{isSyncing ? 'Menyinkron...' : 'Sinkron Cloud'}</span>
           </button>
 
           {/* New Entry Button */}

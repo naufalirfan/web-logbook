@@ -21,7 +21,8 @@ import {
   Zap,
   Sparkles,
   Sun,
-  Moon
+  Moon,
+  RefreshCw
 } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import AddProgramModal from '@/components/AddProgramModal';
@@ -38,8 +39,11 @@ export default function Navbar() {
     isAdmin,
     isPro,
     signOut, 
-    isCloudConnected 
+    isCloudConnected,
+    syncWithCloud
   } = useLogbook();
+
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -238,17 +242,29 @@ export default function Navbar() {
               </span>
             )}
 
-            {/* Supabase Status Indicator */}
+            {/* Supabase Status Indicator & Instant Sync */}
             {isAuthenticated && (
-              <div 
-                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
+              <button 
+                onClick={async () => {
+                  setIsSyncing(true);
+                  const res = await syncWithCloud();
+                  setIsSyncing(false);
+                  alert(res.message || 'Sinkronisasi selesai.');
+                }}
+                disabled={isSyncing}
+                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors hover:opacity-80 active:scale-95 ${
                   isCloudConnected 
                     ? 'bg-[#d9f3e1] dark:bg-[#1aae39]/20 text-[#1aae39] dark:text-[#4ade80] border-[#c8c4be] dark:border-[#3e3e3e]' 
                     : 'bg-[#fef7d6] dark:bg-[#f5d75e]/20 text-[#8c6b00] dark:text-[#facc15] border-[#c8c4be] dark:border-[#3e3e3e]'
                 }`}
-                title={isCloudConnected ? "Terkoneksi ke Supabase Cloud" : "Mode Offline/Lokal (Browser Storage Aktif)"}
+                title="Klik untuk Sinkronkan Data Cloud (Sync antara PC & HP Android)"
               >
-                {isCloudConnected ? (
+                {isSyncing ? (
+                  <>
+                    <RefreshCw className="w-3 h-3 animate-spin text-[#1aae39]" />
+                    <span>Sinkron...</span>
+                  </>
+                ) : isCloudConnected ? (
                   <>
                     <Cloud className="w-3 h-3" />
                     <span>Cloud</span>
@@ -259,7 +275,7 @@ export default function Navbar() {
                     <span>Lokal</span>
                   </>
                 )}
-              </div>
+              </button>
             )}
 
             {/* Theme Toggle (Gelap / Terang) */}
