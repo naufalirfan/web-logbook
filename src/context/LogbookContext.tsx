@@ -637,6 +637,7 @@ export function LogbookProvider({ children }: { children: React.ReactNode }) {
       const safeUserId = toValidUuid(user.id);
       supabase.from('profiles').upsert({
         id: safeUserId,
+        email: user.email || '',
         program_type: activeProgram,
         full_name: updated.fullName,
         nim: updated.nim,
