@@ -92,22 +92,20 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md no-print transition-colors">
+    <header className="sticky top-0 z-40 w-full border-b border-[#e5e3df] dark:border-[#2e2e2e] bg-white/90 dark:bg-[#191919]/90 backdrop-blur-md no-print transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-14 gap-4">
           
           {/* Brand Logo & Program Selector */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                <BookOpen className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-lg bg-[#37352f] dark:bg-[#e3e2e0] flex items-center justify-center text-white dark:text-[#191919] shadow-sm group-hover:scale-105 transition-transform font-bold text-sm">
+                <span>N</span>
               </div>
               <div className="hidden sm:block">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-700 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent">
-                  Logbook<span className="text-blue-600 dark:text-blue-400">Flex</span>
-                </span>
-                <span className="block text-[10px] font-medium text-slate-500 dark:text-slate-400 -mt-1 tracking-wide">
-                  Magang • KKN • PKL • Skripsi
+                <span className="font-semibold text-base tracking-tight text-[#1a1a1a] dark:text-white flex items-center gap-1.5">
+                  Logbook<span className="text-[#5645d4] dark:text-[#a78bfa] font-bold">Flex</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded font-normal bg-[#f0eeec] dark:bg-[#2e2e2e] text-[#5d5b54] dark:text-[#a4a097]">Workspace</span>
                 </span>
               </div>
             </Link>
@@ -117,12 +115,12 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsProgramDropdownOpen(!isProgramDropdownOpen)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${programConfig.badgeColor} hover:opacity-90`}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border border-[#e5e3df] dark:border-[#2e2e2e] bg-[#f7f6f3] dark:bg-[#202020] text-[#37352f] dark:text-[#e3e2e0] hover:bg-[#ede9e4] dark:hover:bg-[#282828] transition-colors"
                   title="Ganti Mode Program"
                 >
-                  <Layers className="w-3.5 h-3.5" />
+                  <Layers className="w-3.5 h-3.5 text-[#5645d4] dark:text-[#a78bfa]" />
                   <span>{programConfig.label}</span>
-                  <ChevronDown className="w-3 h-3 opacity-70" />
+                  <ChevronDown className="w-3 h-3 opacity-60" />
                 </button>
 
                 {isProgramDropdownOpen && (
@@ -131,8 +129,8 @@ export default function Navbar() {
                       className="fixed inset-0 z-40" 
                       onClick={() => setIsProgramDropdownOpen(false)} 
                     />
-                    <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    <div className="absolute left-0 mt-1.5 w-56 rounded-xl bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e] shadow-xl p-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#787671] dark:text-[#787774]">
                         Pilih Mode Program
                       </div>
                       {Object.keys(programs).map((key) => {
@@ -146,14 +144,14 @@ export default function Navbar() {
                               switchProgram(key);
                               setIsProgramDropdownOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-xl transition-all ${
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs rounded-md transition-colors ${
                               isActive
-                                ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-semibold'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                                ? 'bg-[#e6e0f5] dark:bg-[#5645d4]/20 text-[#5645d4] dark:text-[#c4b5fd] font-medium'
+                                : 'text-[#37352f] dark:text-[#e3e2e0] hover:bg-[#f0eeec] dark:hover:bg-[#262626]'
                             }`}
                           >
                             <span className="truncate">{item.label}</span>
-                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0 ml-2" />}
+                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#5645d4] dark:bg-[#a78bfa] shrink-0 ml-2" />}
                           </button>
                         );
                       })}
@@ -166,9 +164,9 @@ export default function Navbar() {
                             setIsProgramDropdownOpen(false);
                             setIsAddProgramOpen(true);
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl transition-colors mt-1 border-t border-slate-100 dark:border-slate-800"
+                          className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-[#d95b00] dark:text-[#fb923c] hover:bg-[#ffe8d4] dark:hover:bg-[#d95b00]/20 rounded-md transition-colors mt-1 border-t border-[#e5e3df] dark:border-[#2e2e2e]"
                         >
-                          <Crown className="w-3.5 h-3.5 text-amber-500" />
+                          <Crown className="w-3.5 h-3.5" />
                           <span>+ Tambah Program Baru</span>
                         </button>
                       )}
@@ -189,13 +187,13 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-slate-100 dark:bg-slate-800/80 text-blue-600 dark:text-blue-400 font-semibold shadow-sm'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/60 dark:hover:bg-slate-800/40 hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-[#f0eeec] dark:bg-[#262626] text-[#1a1a1a] dark:text-white font-semibold'
+                        : 'text-[#5d5b54] dark:text-[#9b9a97] hover:bg-[#f7f6f3] dark:hover:bg-[#202020] hover:text-[#1a1a1a] dark:hover:text-white'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                     <span>{link.label}</span>
                   </Link>
                 );
@@ -210,10 +208,10 @@ export default function Navbar() {
             {isAuthenticated && (
               <button
                 onClick={() => setIsUpgradeOpen(true)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all hover:scale-105 active:scale-95 shadow-sm ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all hover:opacity-90 active:scale-95 ${
                   isPro
-                    ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-amber-500/20'
-                    : 'bg-slate-100 hover:bg-amber-50 dark:bg-slate-800 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                    ? 'bg-[#ffe8d4] dark:bg-[#d95b00]/25 text-[#d95b00] dark:text-[#fb923c] border border-[#c8c4be] dark:border-[#3e3e3e]'
+                    : 'bg-[#5645d4] hover:bg-[#4534b3] text-white shadow-sm'
                 }`}
                 title={isPro ? "Akun PRO Aktif (Klik untuk detail)" : "Tier Free - Klik untuk Upgrade ke PRO"}
               >
@@ -224,9 +222,9 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
+                    <Zap className="w-3.5 h-3.5 text-yellow-300" />
                     <span>FREE</span>
-                    <span className="text-[10px] underline font-semibold text-amber-600 dark:text-amber-400">Upgrade</span>
+                    <span className="text-[10px] underline font-semibold ml-0.5">Upgrade</span>
                   </>
                 )}
               </button>
@@ -234,8 +232,8 @@ export default function Navbar() {
 
             {/* Admin Badge if naufalfaster@gmail.com */}
             {isAdmin && (
-              <span className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-700/60 shadow-sm animate-in fade-in">
-                <Crown className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#ffe8d4] text-[#d95b00] dark:bg-[#d95b00]/25 dark:text-[#fb923c] border border-[#c8c4be] dark:border-[#3e3e3e]">
+                <Crown className="w-3 h-3" />
                 <span>Admin</span>
               </span>
             )}
@@ -243,22 +241,22 @@ export default function Navbar() {
             {/* Supabase Status Indicator */}
             {isAuthenticated && (
               <div 
-                className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+                className={`hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border ${
                   isCloudConnected 
-                    ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50' 
-                    : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/50'
+                    ? 'bg-[#d9f3e1] dark:bg-[#1aae39]/20 text-[#1aae39] dark:text-[#4ade80] border-[#c8c4be] dark:border-[#3e3e3e]' 
+                    : 'bg-[#fef7d6] dark:bg-[#f5d75e]/20 text-[#8c6b00] dark:text-[#facc15] border-[#c8c4be] dark:border-[#3e3e3e]'
                 }`}
                 title={isCloudConnected ? "Terkoneksi ke Supabase Cloud" : "Mode Offline/Lokal (Browser Storage Aktif)"}
               >
                 {isCloudConnected ? (
                   <>
-                    <Cloud className="w-3.5 h-3.5" />
-                    <span>Cloud Sync</span>
+                    <Cloud className="w-3 h-3" />
+                    <span>Cloud</span>
                   </>
                 ) : (
                   <>
-                    <CloudOff className="w-3.5 h-3.5" />
-                    <span>Local Storage</span>
+                    <CloudOff className="w-3 h-3" />
+                    <span>Lokal</span>
                   </>
                 )}
               </div>
@@ -269,12 +267,12 @@ export default function Navbar() {
               onClick={toggleTheme}
               aria-label={isDark ? "Beralih ke mode terang" : "Beralih ke mode gelap"}
               title={isDark ? "Mode Terang" : "Mode Gelap"}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-800"
+              className="p-1.5 rounded-md text-[#5d5b54] dark:text-[#9b9a97] hover:bg-[#f0eeec] dark:hover:bg-[#262626] transition-colors border border-[#e5e3df] dark:border-[#2e2e2e]"
             >
               {isDark ? (
                 <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-300" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-600 animate-in spin-in-90 duration-300" />
+                <Moon className="w-4 h-4 text-[#5d5b54] animate-in spin-in-90 duration-300" />
               )}
             </button>
 
@@ -283,23 +281,23 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 p-1 pl-2.5 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-center gap-2 p-1 pl-2 rounded-md border border-[#e5e3df] dark:border-[#2e2e2e] bg-[#f7f6f3] dark:bg-[#202020] hover:bg-[#ede9e4] dark:hover:bg-[#282828] transition-colors"
                 >
                   <div className="text-right">
-                    <span className="text-xs font-semibold block max-w-[120px] truncate text-slate-800 dark:text-slate-100">
+                    <span className="text-xs font-medium block max-w-[110px] truncate text-[#37352f] dark:text-[#e3e2e0]">
                       {user.user_metadata?.full_name || user.email?.split('@')[0]}
                     </span>
                     {isAdmin ? (
-                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 block -mt-0.5">
-                        Super Admin
+                      <span className="text-[10px] font-semibold text-[#d95b00] dark:text-[#fb923c] block -mt-0.5">
+                        Admin
                       </span>
                     ) : (
-                      <span className="text-[10px] text-slate-400 block -mt-0.5">
+                      <span className="text-[10px] text-[#787671] dark:text-[#787774] block -mt-0.5">
                         Peserta
                       </span>
                     )}
                   </div>
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-tr from-blue-500 to-indigo-500 text-white flex items-center justify-center text-xs font-bold border border-white/20">
+                  <div className="w-7 h-7 rounded-md overflow-hidden bg-[#5645d4] text-white flex items-center justify-center text-xs font-medium">
                     {user.user_metadata?.avatar_url ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img 
@@ -319,17 +317,17 @@ export default function Navbar() {
                       className="fixed inset-0 z-40" 
                       onClick={() => setIsUserMenuOpen(false)} 
                     />
-                    <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-800/80 mb-1">
-                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                    <div className="absolute right-0 mt-1.5 w-64 rounded-xl bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e] shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-2.5 py-2 border-b border-[#e5e3df] dark:border-[#2e2e2e] mb-1">
+                        <p className="text-xs font-semibold text-[#37352f] dark:text-[#e3e2e0] truncate">
                           {user.user_metadata?.full_name || 'Pengguna'}
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-[11px] text-[#787671] dark:text-[#787774] truncate">
                           {user.email}
                         </p>
                         {isAdmin && (
-                          <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                            <Crown className="w-3 h-3 text-amber-500" />
+                          <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#ffe8d4] text-[#d95b00] dark:bg-[#d95b00]/25 dark:text-[#fb923c]">
+                            <Crown className="w-3 h-3" />
                             Hak Akses: Super Admin
                           </span>
                         )}
@@ -340,9 +338,9 @@ export default function Navbar() {
                           signOut();
                           setIsUserMenuOpen(false);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors"
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md transition-colors"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="w-3.5 h-3.5" />
                         <span>Keluar Akun</span>
                       </button>
                     </div>
@@ -367,7 +365,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && isAuthenticated && (
-        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-[#e5e3df] dark:border-[#2e2e2e] bg-white dark:bg-[#191919] px-4 py-3 space-y-1">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -376,10 +374,10 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium ${
+                className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-[#f0eeec] dark:bg-[#262626] text-[#1a1a1a] dark:text-white font-semibold'
+                    : 'text-[#5d5b54] dark:text-[#9b9a97] hover:bg-[#f7f6f3] dark:hover:bg-[#202020]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -389,13 +387,13 @@ export default function Navbar() {
           })}
 
           {/* Mobile Theme Toggle */}
-          <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 py-2">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+          <div className="pt-2 mt-2 border-t border-[#e5e3df] dark:border-[#2e2e2e] flex items-center justify-between px-3 py-2">
+            <span className="text-xs font-medium text-[#787671] dark:text-[#787774]">
               Mode Tampilan
             </span>
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium bg-[#f7f6f3] dark:bg-[#202020] text-[#37352f] dark:text-[#e3e2e0] border border-[#e5e3df] dark:border-[#2e2e2e] active:scale-95 transition-all"
             >
               {isDark ? (
                 <>
@@ -404,7 +402,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+                  <Moon className="w-3.5 h-3.5 text-[#5d5b54]" />
                   <span>Mode Gelap</span>
                 </>
               )}

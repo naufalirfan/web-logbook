@@ -30,64 +30,100 @@ export default function DashboardPage() {
     year: 'numeric'
   });
 
+  const getProgramIcon = (type: string) => {
+    switch (type) {
+      case 'internship': return '🩺';
+      case 'kkn': return '🌾';
+      case 'pkl': return '💼';
+      case 'skripsi': return '🎓';
+      case 'project': return '🚀';
+      default: return '📋';
+    }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
       
-      {/* 1. Header Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 text-white p-6 sm:p-8 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      {/* 1. Notion Minimalist Page Header */}
+      <div className="space-y-4 pt-2">
+        
+        {/* Cover Strip / Top Accent */}
+        <div className="h-24 sm:h-32 w-full rounded-xl bg-gradient-to-r from-[#ffe8d4]/60 via-[#e6e0f5]/60 to-[#dcecfa]/60 dark:from-[#2a223a] dark:via-[#1e2333] dark:to-[#1c2a26] border border-[#e5e3df] dark:border-[#2e2e2e] relative overflow-hidden" />
+
+        <div className="relative -mt-12 sm:-mt-14 px-2 sm:px-4 space-y-4">
           
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{programConfig.label}</span>
-              </span>
-              <span className="text-xs text-slate-400 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>{todayFormatted}</span>
-              </span>
+          {/* Notion Page Icon & Quick Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            
+            <div className="flex items-end gap-3">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-[#202020] border-2 border-[#e5e3df] dark:border-[#2e2e2e] shadow-md flex items-center justify-center text-3xl sm:text-4xl select-none">
+                {getProgramIcon(activeProgram)}
+              </div>
+              <div className="pb-1">
+                <div className="flex items-center gap-2">
+                  <span className="notion-badge-lavender px-2 py-0.5 rounded text-[11px] font-semibold">
+                    {programConfig.label}
+                  </span>
+                  <span className="text-[11px] text-[#787671] dark:text-[#787774] flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>{todayFormatted}</span>
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            {/* Action Buttons: Notion Pill Style */}
+            <div className="flex items-center gap-2">
+              <Link
+                href="/export"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-md text-xs font-medium border border-[#c8c4be] dark:border-[#3e3e3e] bg-white dark:bg-[#202020] hover:bg-[#f7f6f3] dark:hover:bg-[#262626] text-[#37352f] dark:text-[#e3e2e0] transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#5645d4] dark:text-[#a78bfa]" />
+                <span>Rekap & Cetak</span>
+              </Link>
+
+              <Link
+                href="/new"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold bg-[#5645d4] hover:bg-[#4534b3] text-white shadow-sm transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Tulis Logbook</span>
+              </Link>
+            </div>
+
+          </div>
+
+          {/* Page Title & Metadata */}
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1a1a1a] dark:text-white">
               {profile.programTitle || `Logbook ${programConfig.label}`}
             </h1>
-
-            <p className="text-xs sm:text-sm text-slate-300 line-clamp-2">
-              {profile.fullName} ({profile.nim || 'NIM belum diatur'}) • {profile.institution}
+            <p className="text-xs sm:text-sm text-[#787671] dark:text-[#787774]">
+              <span className="font-medium text-[#37352f] dark:text-[#e3e2e0]">{profile.fullName}</span> ({profile.nim || 'NIM belum diatur'}) • {profile.institution}
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Link
-              href="/export"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm transition-all hover:scale-105 active:scale-95"
-            >
-              <FileText className="w-4 h-4 text-blue-400" />
-              <span>Rekap & Cetak</span>
-            </Link>
-
-            <Link
-              href="/new"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Tulis Logbook</span>
-            </Link>
+          {/* Notion Callout Box */}
+          <div className="notion-callout flex items-start gap-3">
+            <span className="text-lg select-none">💡</span>
+            <div className="text-xs text-[#5d5b54] dark:text-[#9b9a97] space-y-0.5 leading-relaxed">
+              <p className="font-medium text-[#37352f] dark:text-[#e3e2e0]">
+                Workspace {programConfig.label} aktif untuk mitra <span className="font-semibold">{profile.partnerName || 'Mitra belum diatur'}</span>.
+              </p>
+              <p>
+                Dosen / Pembimbing: <span className="text-[#1a1a1a] dark:text-white font-medium">{profile.supervisorName || 'Belum diatur'}</span>. Pastikan entri kegiatan selalu diperbarui dan diajukan untuk verifikasi berkala.
+              </p>
+            </div>
           </div>
 
         </div>
 
-        {/* Ambient Glow background */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* 2. Program Tabs Switcher */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap mr-2">
-          Mode Program:
+      {/* 2. Notion Database View Tabs (Program Switcher) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-[#e5e3df] dark:border-[#2e2e2e]">
+        <span className="text-[11px] font-semibold text-[#787671] dark:text-[#787774] uppercase tracking-wider whitespace-nowrap mr-1 px-1">
+          Views:
         </span>
         {Object.keys(programs).map((key) => {
           const item = programs[key];
@@ -97,12 +133,13 @@ export default function DashboardPage() {
             <button
               key={key}
               onClick={() => switchProgram(key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs whitespace-nowrap transition-colors ${
                 isSelected
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
-                  : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  ? 'bg-[#37352f] dark:bg-[#e3e2e0] text-white dark:text-[#191919] font-semibold shadow-sm'
+                  : 'text-[#5d5b54] dark:text-[#9b9a97] hover:bg-[#f0eeec] dark:hover:bg-[#262626] font-medium'
               }`}
             >
+              <span>{getProgramIcon(key)}</span>
               <span>{item.label}</span>
             </button>
           );
@@ -113,11 +150,11 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setIsAddProgramOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700/60 transition-all hover:scale-105 active:scale-95 shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap text-[#d95b00] dark:text-[#fb923c] hover:bg-[#ffe8d4] dark:hover:bg-[#d95b00]/20 transition-colors ml-1"
             title="Tambah Program Kustom Baru (Super User)"
           >
-            <Crown className="w-3.5 h-3.5 text-amber-500" />
-            <span>+ Tambah Program</span>
+            <Crown className="w-3.5 h-3.5" />
+            <span>+ Tambah View</span>
           </button>
         )}
       </div>
@@ -129,11 +166,12 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Riwayat Aktivitas Harian
+            <h2 className="text-base font-semibold text-[#1a1a1a] dark:text-white flex items-center gap-2">
+              <span>📋</span>
+              <span>Riwayat Aktivitas Harian</span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Daftar kegiatan yang telah dicatat dan status verifikasinya.
+            <p className="text-xs text-[#787671] dark:text-[#787774]">
+              Database catatan kegiatan dan status verifikasi pembimbing.
             </p>
           </div>
         </div>

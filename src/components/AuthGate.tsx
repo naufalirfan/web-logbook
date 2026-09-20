@@ -69,13 +69,13 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#191919]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg animate-bounce">
-            <BookOpen className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-xl bg-[#37352f] dark:bg-[#e3e2e0] flex items-center justify-center text-white dark:text-[#191919] font-bold text-lg shadow-sm animate-pulse">
+            <span>N</span>
           </div>
-          <p className="text-xs font-semibold text-slate-500 tracking-wider uppercase animate-pulse">
-            Memuat Sistem Logbook...
+          <p className="text-xs font-medium text-[#787671] dark:text-[#787774] tracking-wide animate-pulse">
+            Memuat Workspace Logbook...
           </p>
         </div>
       </div>
@@ -89,36 +89,36 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
   // If NOT authenticated, show the Auth Login Gate
   return (
-    <div className="min-h-[92vh] flex items-center justify-center px-4 py-12 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-[88vh] flex items-center justify-center px-4 py-10 bg-[#fafaf9] dark:bg-[#191919]">
       
       <div className="w-full max-w-md space-y-6 animate-in fade-in zoom-in-95 duration-200">
         
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-xl shadow-blue-500/25 mb-1">
-            <BookOpen className="w-7 h-7" />
+        <div className="text-center space-y-1">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#37352f] dark:bg-[#e3e2e0] text-white dark:text-[#191919] font-bold text-xl shadow-sm mb-1">
+            <span>N</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Logbook <span className="text-blue-600 dark:text-blue-400">By Naufal</span>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1a1a1a] dark:text-white">
+            Logbook <span className="text-[#5645d4] dark:text-[#a78bfa]">By Naufal</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium max-w-sm mx-auto">
+          <p className="text-xs sm:text-sm font-medium text-[#37352f] dark:text-[#e3e2e0]">
             Naufal Irfansyah Saputra
           </p>
-          <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+          <p className="text-xs text-[#5d5b54] dark:text-[#9b9a97]">
             Sistem Catatan Harian & Presensi Magang
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-6">
+        <div className="bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e] rounded-xl p-6 sm:p-7 shadow-sm space-y-5">
           
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
-              <Lock className="w-3.5 h-3.5 text-blue-500" />
+          <div className="flex items-center justify-between border-b border-[#e5e3df] dark:border-[#2e2e2e] pb-3">
+            <span className="text-xs font-semibold text-[#37352f] dark:text-[#e3e2e0] flex items-center gap-1.5 uppercase tracking-wider">
+              <Lock className="w-3.5 h-3.5 text-[#5645d4] dark:text-[#a78bfa]" />
               <span>Autentikasi Akses</span>
             </span>
-            <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400">
-              {isCloudConnected ? 'Supabase Cloud Sync' : 'Akun Resmi'}
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded notion-badge-mint">
+              {isCloudConnected ? 'Cloud Sync' : 'Akun Resmi'}
             </span>
           </div>
 
@@ -132,9 +132,9 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 onClick={signInWithGoogle}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-semibold text-sm shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-md bg-white dark:bg-[#262626] hover:bg-[#f7f6f3] dark:hover:bg-[#303030] text-[#37352f] dark:text-[#e3e2e0] border border-[#c8c4be] dark:border-[#3e3e3e] font-medium text-xs shadow-sm transition-colors"
               >
-                <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -158,35 +158,35 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Security & Authentication Info */}
-          <div className="rounded-2xl p-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800/80 text-center space-y-1.5">
-            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <div className="notion-callout text-center space-y-1">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#37352f] dark:text-[#e3e2e0]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#1aae39]" />
               <span>Autentikasi Resmi Google OAuth</span>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              Login hanya dapat dilakukan menggunakan akun Google asli yang terverifikasi. Hak akses Super Admin otomatis diberikan kepada pemilik sistem (<b>naufalfaster@gmail.com</b>).
+            <p className="text-[11px] text-[#787671] dark:text-[#787774] leading-relaxed">
+              Login menggunakan akun Google terverifikasi. Hak akses Super Admin otomatis aktif untuk pemilik (<b>naufalfaster@gmail.com</b>).
             </p>
           </div>
 
         </div>
 
         {/* Feature Highlights Footer */}
-        <div className="grid grid-cols-3 gap-3 text-center text-[11px] text-slate-500 dark:text-slate-400">
-          <div className="p-2.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50">
-            <Layers className="w-4 h-4 mx-auto mb-1 text-blue-500" />
-            <span className="font-semibold block text-slate-700 dark:text-slate-300">5 Mode Program</span>
+        <div className="grid grid-cols-3 gap-2.5 text-center text-[11px] text-[#787671] dark:text-[#787774]">
+          <div className="p-2.5 rounded-xl bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e]">
+            <Layers className="w-4 h-4 mx-auto mb-1 text-[#5645d4] dark:text-[#a78bfa]" />
+            <span className="font-semibold block text-[#37352f] dark:text-[#e3e2e0]">5 Mode Program</span>
             <span>Magang / KKN / dll</span>
           </div>
 
-          <div className="p-2.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50">
-            <Clock className="w-4 h-4 mx-auto mb-1 text-indigo-500" />
-            <span className="font-semibold block text-slate-700 dark:text-slate-300">Hitung Jam</span>
+          <div className="p-2.5 rounded-xl bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e]">
+            <Clock className="w-4 h-4 mx-auto mb-1 text-[#0075de] dark:text-[#60a5fa]" />
+            <span className="font-semibold block text-[#37352f] dark:text-[#e3e2e0]">Hitung Jam</span>
             <span>Kalkulasi Otomatis</span>
           </div>
 
-          <div className="p-2.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50">
-            <FileSpreadsheet className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
-            <span className="font-semibold block text-slate-700 dark:text-slate-300">Cetak & Excel</span>
+          <div className="p-2.5 rounded-xl bg-white dark:bg-[#202020] border border-[#e5e3df] dark:border-[#2e2e2e]">
+            <FileSpreadsheet className="w-4 h-4 mx-auto mb-1 text-[#1aae39] dark:text-[#4ade80]" />
+            <span className="font-semibold block text-[#37352f] dark:text-[#e3e2e0]">Cetak & Excel</span>
             <span>Format PDF Resmi</span>
           </div>
         </div>

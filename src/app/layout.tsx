@@ -43,7 +43,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors">
+      <body className="min-h-screen flex flex-col bg-white dark:bg-[#191919] text-[#37352f] dark:text-[#e3e2e0] font-sans transition-colors">
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
         <LogbookProvider>
           <Navbar />
@@ -52,7 +52,7 @@ export default function RootLayout({
               {children}
             </AuthGate>
           </main>
-          <footer className="border-t border-slate-200/80 dark:border-slate-800/80 py-6 text-center text-xs text-slate-400 no-print">
+          <footer className="border-t border-[#e5e3df] dark:border-[#2e2e2e] py-6 text-center text-xs text-[#787671] dark:text-[#787774] no-print">
             <div className="max-w-7xl mx-auto px-4">
               <p>
                 Logbook By{' '}
@@ -60,7 +60,7 @@ export default function RootLayout({
                   href="https://www.instagram.com/naufal_irfansyah"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-slate-600 dark:text-slate-300 hover:text-pink-600 dark:hover:text-pink-400 underline decoration-slate-300 dark:decoration-slate-700 underline-offset-4 transition-colors"
+                  className="font-medium text-[#37352f] dark:text-[#e3e2e0] hover:text-[#5645d4] dark:hover:text-[#a78bfa] underline decoration-[#c8c4be] dark:decoration-[#3e3e3e] underline-offset-4 transition-colors"
                 >
                   Naufal Irfansyah Saputra
                 </a>{' '}
